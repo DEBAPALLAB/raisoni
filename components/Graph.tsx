@@ -6,22 +6,27 @@ import { Node, Edge, Subject, SUBJECT_COLORS, SUBJECT_LABELS } from '@/data/seed
 import { useTokens } from '@/context/TokenContext';
 
 interface GraphProps {
-  nodes: Node[];
+  nodes: any[];
   edges: Edge[];
   selectedNodeId: string | null;
   activeFilters: Subject[];
-  onNodeClick: (node: Node) => void;
+  viewLayer: 'topics' | 'subtopics' | 'questions';
+  onNodeClick: (node: any) => void;
+  onDrillDown: (id: string) => void;
 }
 
 interface SimNode extends d3.SimulationNodeDatum {
   id: string;
-  subject: string;
-  activity: number;
-  status: string;
-  title: string;
-  asker: string;
-  time: string;
+  subject?: string;
+  activity?: number;
+  status?: string;
+  title?: string;
+  asker?: string;
+  time?: string;
   isNew?: boolean;
+  label?: string;
+  color?: string;
+  icon?: string;
 }
 
 interface SimLink extends d3.SimulationLinkDatum<SimNode> {
@@ -35,13 +40,24 @@ const SUBJECT_ICONS: Record<string, string> = {
   cs: '⊞',
 };
 
-export default function Graph({ nodes, edges, selectedNodeId, activeFilters, onNodeClick }: GraphProps) {
+export default function Graph({ 
+  nodes, 
+  edges, 
+  selectedNodeId, 
+  activeFilters, 
+  viewLayer,
+  onNodeClick,
+  onDrillDown
+}: GraphProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const { bounties } = useTokens();
 
-  /* radius scales with activity */
-  const getR = (activity: number) => Math.max(44, Math.min(70, 40 + activity * 0.75));
+  const getR = (activity: number = 50) => {
+    if (viewLayer === 'topics') return 80;
+    if (viewLayer === 'subtopics') return 60;
+    return Math.max(44, Math.min(70, 40 + activity * 0.75));
+  };
 
   const draw = useCallback(() => {
     if (!svgRef.current || !containerRef.current) return;
@@ -86,18 +102,18 @@ export default function Graph({ nodes, edges, selectedNodeId, activeFilters, onN
       y: H / 2 + (Math.random() - 0.5) * 280,
     }));
     const nodeMap = new Map(simNodes.map((n) => [n.id, n]));
-    const simLinks: SimLink[] = edges
+    const simLinks: SimLink[] = viewLayer === 'questions' ? edges
       .map((e) => ({ source: nodeMap.get(e.source)!, target: nodeMap.get(e.target)!, type: e.type }))
-      .filter((l) => l.source && l.target);
+      .filter((l) => l.source && l.target) : [];
 
     /* ── force sim ───────────────────────────────────────────── */
     const sim = d3.forceSimulation<SimNode>(simNodes)
-      .force('link', d3.forceLink<SimNode, SimLink>(simLinks).id((d) => d.id).distance(200).strength(0.5))
-      .force('charge', d3.forceManyBody().strength(-600))
+      .force('link', d3.forceLink<SimNode, SimLink>(simLinks).id((d) => d.id).distance(220).strength(0.5))
+      .force('charge', d3.forceManyBody().strength(viewLayer === 'topics' ? -2000 : -800))
       .force('center', d3.forceCenter(W / 2, H / 2))
-      .force('collision', d3.forceCollide<SimNode>().radius((d) => getR(d.activity) + 30));
+      .force('collision', d3.forceCollide<SimNode>().radius((d) => getR(d.activity) + 40));
 
-    /* ── edges ───────────────────────────────────────────────── */
+    /* ── edges (only for questions) ──────────────────────────── */
     const link = g.append('g').selectAll('line').data(simLinks).enter().append('line')
       .attr('stroke', '#BCC9E2')
       .attr('stroke-width', 1.5)
@@ -182,21 +198,25 @@ export default function Graph({ nodes, edges, selectedNodeId, activeFilters, onN
       .attr('class', 'sel-ring')
       .attr('r', (d) => getR(d.activity) + 6)
       .attr('fill', 'none')
-      .attr('stroke-width', 2)
-      .attr('stroke', (d) => d.id === selectedNodeId ? '#ffffff' : 'transparent')
-      .attr('opacity', (d) => d.id === selectedNodeId ? 0.7 : 0);
+      .attr('stroke-width', 2.5)
+      .attr('stroke', (d) => (d.id === selectedNodeId ? 'rgba(79,70,229,0.9)' : 'transparent'))
+      .attr('opacity', (d) => (d.id === selectedNodeId ? 0.75 : 0));
 
     /* ── main filled circle ─────────────────────────────────── */
     nodeG.append('circle')
       .attr('class', 'main-circle')
       .attr('r', (d) => getR(d.activity))
       .attr('fill', '#FFFFFF')
-      .attr('stroke', (d) => SUBJECT_COLORS[d.subject])
+      .attr('stroke', (d) => {
+        if (viewLayer === 'topics') return d.color || '#7C6EE6';
+        if (viewLayer === 'subtopics') return '#7C6EE6';
+        return d.subject ? SUBJECT_COLORS[d.subject as keyof typeof SUBJECT_COLORS] : '#7C6EE6';
+      })
       .attr('stroke-width', (d) => (d.id === selectedNodeId ? 3 : 2))
       .attr('filter', 'url(#node-shadow)')
       .attr('opacity', (d) => {
-        if (activeFilters.length === 0) return 1;
-        return activeFilters.includes(d.subject as Subject) ? 1 : 0.35;
+        if (viewLayer !== 'questions' || activeFilters.length === 0) return 1;
+        return d.subject && activeFilters.includes(d.subject as Subject) ? 1 : 0.35;
       });
 
     /* ── new-node pulse ring ──────────────────────────────────── */
@@ -219,37 +239,49 @@ export default function Graph({ nodes, edges, selectedNodeId, activeFilters, onN
       });
 
     /* ── ICON (Ψ, Σ …) ─────────────── top of circle ─────────── */
-    nodeG.append('text')
+    nodeG.filter(d => viewLayer === 'questions' || viewLayer === 'topics')
+      .append('text')
       .attr('text-anchor', 'middle')
-      .attr('dy', (d) => -getR(d.activity) * 0.28)
+      .attr('dy', (d) => -getR(d.activity) * (viewLayer === 'topics' ? 0.05 : 0.28))
       .attr('font-family', 'Syne, sans-serif')
       .attr('font-weight', '800')
-      .attr('font-size', (d) => Math.min(getR(d.activity) * 0.48, 24))
-      .attr('fill', (d) => SUBJECT_COLORS[d.subject])
-      .attr('opacity', (d) => {
-        if (activeFilters.length === 0) return 1;
-        return activeFilters.includes(d.subject as Subject) ? 1 : 0.12;
+      .attr('font-size', (d) => viewLayer === 'topics' ? 44 : Math.min(getR(d.activity!) * 0.48, 24))
+      .attr('fill', (d) => {
+        if (viewLayer === 'topics') return d.color || '#000';
+        return d.subject ? SUBJECT_COLORS[d.subject as keyof typeof SUBJECT_COLORS] : '#000';
       })
-      .text((d) => SUBJECT_ICONS[d.subject] || '?');
+      .attr('opacity', (d) => {
+        if (viewLayer !== 'questions' || activeFilters.length === 0) return 1;
+        return d.subject && activeFilters.includes(d.subject as Subject) ? 1 : 0.12;
+      })
+      .text((d) => viewLayer === 'topics' ? (d.icon || '?') : (d.subject ? SUBJECT_ICONS[d.subject] : '?'));
 
-    /* ── SUBJECT LABEL (e.g., "QUANTUM PHYSICS") ─────────────── */
+    /* ── LAYER LABEL (e.g., "QUANTUM PHYSICS") ─────────────── */
     nodeG.append('text')
       .attr('text-anchor', 'middle')
-      .attr('dy', (d) => getR(d.activity) * 0.1)
-      .attr('font-family', 'DM Mono, monospace')
-      .attr('font-size', (d) => Math.max(8, Math.min(11, getR(d.activity) * 0.16)))
-      .attr('font-weight', '500')
-      .attr('letter-spacing', '0.08em')
-      .attr('fill', (d) => SUBJECT_COLORS[d.subject])
-      .attr('opacity', (d) => {
-        if (activeFilters.length === 0) return 0.9;
-        return activeFilters.includes(d.subject as Subject) ? 0.9 : 0.3;
+      .attr('dy', (d) => viewLayer === 'questions' ? getR(d.activity!) * 0.1 : 5)
+      .attr('font-family', viewLayer === 'questions' ? 'DM Mono, monospace' : 'Outfit, sans-serif')
+      .attr('font-size', (d) => {
+        if (viewLayer === 'topics') return 16;
+        if (viewLayer === 'subtopics') return 14;
+        return Math.max(8, Math.min(11, getR(d.activity!) * 0.16));
       })
-      .text((d) => SUBJECT_LABELS[d.subject].toUpperCase());
+      .attr('font-weight', viewLayer === 'questions' ? '500' : '700')
+      .attr('letter-spacing', viewLayer === 'questions' ? '0.08em' : '0')
+      .attr('fill', (d) => {
+        if (viewLayer === 'topics') return d.color || '#0F172A';
+        if (viewLayer === 'subtopics') return '#0F172A';
+        return d.subject ? SUBJECT_COLORS[d.subject as keyof typeof SUBJECT_COLORS] : '#0F172A';
+      })
+      .text((d) => {
+        if (viewLayer !== 'questions') return d.label || '';
+        return d.subject ? SUBJECT_LABELS[d.subject].toUpperCase() : '';
+      });
 
     /* ── TITLE TEXT (2 lines) below subject label ─────────────── */
-    nodeG.each(function (d) {
-      const r = getR(d.activity);
+    nodeG.filter(d => viewLayer === 'questions').each(function (d) {
+      if (!d.title) return;
+      const r = getR(d.activity!);
       const words = d.title.split(' ');
       const maxW = r * 1.55;
       const lineH = Math.max(11, r * 0.22);
@@ -318,18 +350,12 @@ export default function Graph({ nodes, edges, selectedNodeId, activeFilters, onN
       })
       .on('click', function (event, d) {
         event.stopPropagation();
-        const found = nodes.find((n) => n.id === d.id);
-        if (found) onNodeClick(found);
-        // update rings
-        svg.selectAll('.sel-ring')
-          .attr('stroke', (rd: any) => rd.id === d.id ? '#ffffff' : 'transparent')
-          .attr('opacity', (rd: any) => rd.id === d.id ? 0.7 : 0);
-        svg.selectAll('.main-circle')
-          .attr('fill', (rd: any) => {
-            const c = SUBJECT_COLORS[rd.subject];
-            return rd.id === d.id ? c + '55' : (rd.isNew ? c + 'CC' : c + '25');
-          })
-          .attr('stroke-width', (rd: any) => rd.id === d.id ? 2.5 : 1.8);
+        if (viewLayer === 'questions') {
+          const found = nodes.find((n) => n.id === d.id);
+          if (found) onNodeClick(found);
+        } else {
+          onDrillDown(d.id);
+        }
       });
 
     /* ── tick ─────────────────────────────────────────────────── */
@@ -368,13 +394,17 @@ export default function Graph({ nodes, edges, selectedNodeId, activeFilters, onN
         border: '1px solid rgba(148,163,184,0.4)', borderRadius: 12, padding: 6, zIndex: 10,
         boxShadow: '0 18px 30px rgba(15,23,42,0.16)',
       }}>
-        {([
-          { label: 'Zoom In', active: false, icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4" stroke="currentColor" strokeWidth="1.2"/><line x1="9.5" y1="9.5" x2="13" y2="13" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/><line x1="6" y1="4" x2="6" y2="8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/><line x1="4" y1="6" x2="8" y2="6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
-          { label: 'Focused', active: true, icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="1" y1="4" x2="1" y2="1" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/><line x1="1" y1="1" x2="4" y2="1" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/><line x1="10" y1="1" x2="13" y2="1" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/><line x1="13" y1="1" x2="13" y2="4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/><line x1="1" y1="10" x2="1" y2="13" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/><line x1="1" y1="13" x2="4" y2="13" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/><line x1="13" y1="10" x2="13" y2="13" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/><line x1="10" y1="13" x2="13" y2="13" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
-          { label: 'Layers', active: false, icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2L13 5.5L7 9L1 5.5L7 2z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/><path d="M1 8.5L7 12L13 8.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
-        ] as const).map((btn) => (
-          <button key={btn.label} className={`pill-btn ${btn.active ? 'active' : ''}`}
-            style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        {[
+          { id: 'topics', label: 'Topics', active: viewLayer === 'topics', icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2L13 5.5L7 9L1 5.5L7 2z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/></svg> },
+          { id: 'subtopics', label: 'Subtopics', active: viewLayer === 'subtopics', icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 8.5L7 12L13 8.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
+          { id: 'questions', label: 'Network', active: viewLayer === 'questions', icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" strokeWidth="1.2"/></svg> },
+        ].map((btn) => (
+          <button 
+            key={btn.id} 
+            onClick={() => onDrillDown(btn.id)}
+            className={`pill-btn ${btn.active ? 'active' : ''}`}
+            style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+          >
             {btn.icon}{btn.label}
           </button>
         ))}

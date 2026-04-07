@@ -19,7 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body style={{ height: '100vh', overflow: 'hidden' }}>
+      <body style={{ minHeight: '100vh', overflowY: 'auto' }}>
         <TokenProvider>{children}</TokenProvider>
       </body>
     </html>
