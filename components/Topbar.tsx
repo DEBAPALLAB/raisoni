@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { useTokens } from '@/context/TokenContext';
+import Avatar from './Avatar';
 import StreakPopover from './StreakPopover';
 
 interface TopbarProps {
@@ -11,14 +11,7 @@ interface TopbarProps {
 }
 
 export default function Topbar({ onAskDoubt }: TopbarProps) {
-  const pathname = usePathname();
   const { balance } = useTokens();
-
-  const navItems = [
-    { label: 'Library', href: '/library' },
-    { label: 'Graph', href: '/graph' },
-    { label: 'Pathways', href: '/pathways' },
-  ];
 
   const [showStreak, setShowStreak] = useState(false);
 
@@ -117,15 +110,40 @@ export default function Topbar({ onAskDoubt }: TopbarProps) {
         <div style={{ width: 1, height: 32, background: 'var(--border-subtle)' }} />
 
         {/* User Profile */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{
-            width: 40, height: 40, borderRadius: 12, background: '#F1F5F9',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
-            border: '2px solid #fff', boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-          }}>
-             <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Alex" alt="Avatar" />
+        <Link
+          href="/profile"
+          aria-label="Open profile"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            textDecoration: 'none',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              padding: '4px 8px 4px 4px',
+              borderRadius: 999,
+              border: '1px solid var(--border-subtle)',
+              background: 'var(--bg-surface)',
+              transition: 'all 0.2s ease',
+            }}
+            className="hover-glow"
+          >
+            <Avatar name="Alex Rivera" color="#7C6EE6" size={40} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>
+                Alex Rivera
+              </span>
+              <span className="section-label" style={{ fontSize: 9 }}>
+                View profile
+              </span>
+            </div>
           </div>
-        </div>
+        </Link>
       </div>
     </header>
   );
