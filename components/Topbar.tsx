@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useTokens } from '@/context/TokenContext';
+import { useAuth } from '@/context/AuthContext';
 import Avatar from './Avatar';
 import StreakPopover from './StreakPopover';
 
@@ -11,7 +13,10 @@ interface TopbarProps {
 }
 
 export default function Topbar({ onAskDoubt }: TopbarProps) {
+  const router = useRouter();
   const { balance } = useTokens();
+  const { currentUser, logout } = useAuth();
+
   const [showStreak, setShowStreak] = useState(false);
 
   return (
@@ -53,7 +58,7 @@ export default function Topbar({ onAskDoubt }: TopbarProps) {
           width: '100%', position: 'relative', display: 'flex', alignItems: 'center',
         }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'absolute', left: 14, color: 'var(--text-muted)' }}>
-            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+            <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
           </svg>
           <input
             placeholder="Search keywords, topics, or subtopics..."
@@ -78,7 +83,7 @@ export default function Topbar({ onAskDoubt }: TopbarProps) {
             <span style={{ fontSize: 18 }}>🔥</span>
             <span style={{ fontWeight: 700 }}>7</span>
           </button>
-          
+
           {showStreak && (
             <div style={{ position: 'absolute', top: '120%', right: 0, zIndex: 100 }}>
               <StreakPopover onClose={() => setShowStreak(false)} />
@@ -87,23 +92,23 @@ export default function Topbar({ onAskDoubt }: TopbarProps) {
         </div>
 
         {/* Tokens / Rewards */}
-        <Link 
+        <Link
           href="/rewards"
           style={{ textDecoration: 'none' }}
         >
-          <div style={{ 
+          <div style={{
             display: 'flex', alignItems: 'center', gap: 10, padding: '8px 16px',
             background: 'rgba(79, 70, 229, 0.08)', borderRadius: 12, border: '1px solid rgba(79, 70, 229, 0.15)'
           }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="8"/><path d="M12 7v10M8 12h8"/>
+              <circle cx="12" cy="12" r="8" /><path d="M12 7v10M8 12h8" />
             </svg>
             <span style={{ fontWeight: 800, color: 'var(--accent-primary)', fontSize: 15 }}>{balance}</span>
           </div>
         </Link>
 
         {/* Action Button */}
-        <button 
+        <button
           onClick={onAskDoubt}
           style={{
             background: 'var(--text-primary)', color: '#fff', border: 'none',
@@ -111,10 +116,41 @@ export default function Topbar({ onAskDoubt }: TopbarProps) {
             cursor: 'pointer', boxShadow: '0 10px 15px -3px rgba(15, 23, 42, 0.1)',
           }}
         >
-          Ask Question
-        </button>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              padding: '4px 8px 4px 4px',
+              borderRadius: 999,
+              border: '1px solid var(--border-subtle)',
+              background: 'var(--bg-surface)',
+              transition: 'all 0.2s ease',
+            }}
+            className="hover-glow"
+          >
+            <Avatar name={currentUser.name} color={currentUser.color} size={40} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>
+                {currentUser.name}
+              </span>
+              <span className="section-label" style={{ fontSize: 9 }}>
+                View profile
+              </span>
+            </div>
+          </div>
+        </Link>
 
-        <Avatar name="Julian V." />
+        <button
+          className="btn-pill btn-pill-ghost"
+          onClick={() => {
+            logout();
+            router.push('/login');
+          }}
+          style={{ height: 44, padding: '0 16px', fontSize: 12 }}
+        >
+          Sign out
+        </button>
       </div>
     </header>
   );

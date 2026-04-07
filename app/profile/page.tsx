@@ -7,23 +7,22 @@ import Sidebar from '@/components/Sidebar';
 import Avatar from '@/components/Avatar';
 import Badge from '@/components/Badge';
 import { useTokens } from '@/context/TokenContext';
+import { useAuth } from '@/context/AuthContext';
 import {
   ANSWERS,
   NODES,
-  USERS,
   SUBJECT_COLORS,
   SUBJECT_LABELS,
   type Subject,
 } from '@/data/seed';
 
-const CURRENT_USER = USERS.find((user) => user.name === 'Alex Rivera') ?? USERS[0];
-
 export default function ProfilePage() {
   const { balance, bounties, transactions } = useTokens();
+  const { currentUser, currentLoginId } = useAuth();
   const [activeFilters, setActiveFilters] = useState<Subject[]>([]);
 
-  const authoredQuestions = NODES.filter((node) => node.asker === CURRENT_USER.name);
-  const authoredAnswers = ANSWERS.filter((answer) => answer.authorId === CURRENT_USER.id);
+  const authoredQuestions = NODES.filter((node) => node.asker === currentUser.name);
+  const authoredAnswers = ANSWERS.filter((answer) => answer.authorId === currentUser.id);
   const activeBounties = Object.entries(bounties).filter(([, amount]) => amount > 0);
   const totalBountyValue = activeBounties.reduce((sum, [, amount]) => sum + amount, 0);
 
@@ -109,7 +108,7 @@ export default function ProfilePage() {
                     lineHeight: 1.05,
                   }}
                 >
-                  {CURRENT_USER.name}
+                  {currentUser.name}
                 </h1>
                 <p style={{ marginTop: 10, color: 'var(--text-secondary)', maxWidth: 700 }}>
                   A living summary of the current contributor in Solvi, combining reputation,
@@ -122,15 +121,16 @@ export default function ProfilePage() {
             <div style={{ display: 'grid', gridTemplateColumns: '1.15fr 0.85fr', gap: 24, marginBottom: 24 }}>
               <section className="card-premium" style={{ padding: 28 }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 18 }}>
-                  <Avatar name={CURRENT_USER.name} color={CURRENT_USER.color} size={84} />
+                  <Avatar name={currentUser.name} color={currentUser.color} size={84} />
 
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                       <h2 className="font-outfit" style={{ fontSize: 26, fontWeight: 800 }}>
-                        {CURRENT_USER.name}
+                        {currentUser.name}
                       </h2>
-                      <Badge variant="violet">{CURRENT_USER.role}</Badge>
-                      <Badge variant="green">{CURRENT_USER.lastActive}</Badge>
+                      <Badge variant="violet">{currentUser.role}</Badge>
+                      <Badge variant="green">{currentUser.lastActive}</Badge>
+                      <Badge variant="gray">{currentLoginId}</Badge>
                     </div>
 
                     <p style={{ marginTop: 10, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
@@ -139,7 +139,7 @@ export default function ProfilePage() {
                     </p>
 
                     <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 18 }}>
-                      {CURRENT_USER.expertise.map((subject) => (
+                      {currentUser.expertise.map((subject) => (
                         <span
                           key={subject}
                           style={{
@@ -176,7 +176,7 @@ export default function ProfilePage() {
                   QUICK STATS
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                  <StatTile label="Reputation" value={CURRENT_USER.reputation.toString()} />
+                  <StatTile label="Reputation" value={currentUser.reputation.toString()} />
                   <StatTile label="Token Balance" value={balance.toString()} />
                   <StatTile label="Questions" value={authoredQuestions.length.toString()} />
                   <StatTile label="Solved" value={solvedQuestions.toString()} />
@@ -203,6 +203,19 @@ export default function ProfilePage() {
                       {totalActivity}
                     </div>
                   </div>
+                </div>
+                <div
+                  style={{
+                    marginTop: 18,
+                    paddingTop: 18,
+                    borderTop: '1px solid var(--border-subtle)',
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: 16,
+                  }}
+                >
+                  <StatTile label="Login ID" value={currentLoginId} />
+                  <StatTile label="Account Type" value={currentUser.role} />
                 </div>
               </section>
             </div>

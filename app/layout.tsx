@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { TokenProvider } from '@/context/TokenContext';
+import AppProviders from '@/components/AppProviders';
 
 export const metadata: Metadata = {
   title: 'Solvi — Lexicon Explorer',
@@ -20,7 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body style={{ minHeight: '100vh', overflowY: 'auto' }}>
-        <TokenProvider>{children}</TokenProvider>
+        <AppProviders>{children}</AppProviders>
       </body>
     </html>
   );
