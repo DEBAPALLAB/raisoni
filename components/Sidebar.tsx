@@ -27,7 +27,7 @@ export default function Sidebar({ activeFilters, onFilterToggle }: SidebarProps)
     { label: 'Pulse', icon: 'M13 2L3 14h9l-1 8 10-12h-9l1-8z', href: '/' },
     { label: 'Knowledge Graph', icon: 'M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z', href: '/graph' },
     { label: 'Library', icon: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20', href: '/library' },
-    { label: 'Activity', icon: 'M12 20V10M18 20V4M6 20v-4', href: '/activity' },
+    { label: 'Leaderboard', icon: 'M12 20V10M18 20V4M6 20v-4', href: '/leaderboard' },
   ];
 
   return (

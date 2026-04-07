@@ -116,41 +116,61 @@ export default function Topbar({ onAskDoubt }: TopbarProps) {
             cursor: 'pointer', boxShadow: '0 10px 15px -3px rgba(15, 23, 42, 0.1)',
           }}
         >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 10,
-              padding: '4px 8px 4px 4px',
-              borderRadius: 999,
-              border: '1px solid var(--border-subtle)',
-              background: 'var(--bg-surface)',
-              transition: 'all 0.2s ease',
-            }}
-            className="hover-glow"
-          >
-            <Avatar name={currentUser.name} color={currentUser.color} size={40} />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>
-                {currentUser.name}
-              </span>
-              <span className="section-label" style={{ fontSize: 9 }}>
-                View profile
-              </span>
-            </div>
-          </div>
-        </Link>
-
-        <button
-          className="btn-pill btn-pill-ghost"
-          onClick={() => {
-            logout();
-            router.push('/login');
-          }}
-          style={{ height: 44, padding: '0 16px', fontSize: 12 }}
-        >
-          Sign out
+          Ask Question
         </button>
+
+        {currentUser ? (
+          <>
+            <Link href="/settings" style={{ textDecoration: 'none' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  padding: '4px 8px 4px 4px',
+                  borderRadius: 999,
+                  border: '1px solid var(--border-subtle)',
+                  background: 'var(--bg-surface)',
+                  transition: 'all 0.2s ease',
+                }}
+                className="hover-glow"
+              >
+                <Avatar name={currentUser.name} color={currentUser.color} size={40} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2, paddingRight: 8 }}>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>
+                    {currentUser.name}
+                  </span>
+                  <span className="section-label" style={{ fontSize: 9 }}>
+                    View profile
+                  </span>
+                </div>
+              </div>
+            </Link>
+
+            <button
+              className="btn-pill btn-pill-ghost"
+              onClick={() => {
+                logout();
+                router.push('/login');
+              }}
+              style={{ height: 44, padding: '0 16px', fontSize: 12 }}
+            >
+              Sign out
+            </button>
+          </>
+        ) : (
+          <Link href="/login" style={{ textDecoration: 'none' }}>
+            <button
+              style={{
+                background: 'var(--bg-surface)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)',
+                borderRadius: 12, padding: '10px 24px', fontWeight: 700, fontSize: 14,
+                cursor: 'pointer',
+              }}
+            >
+              Sign In
+            </button>
+          </Link>
+        )}
       </div>
     </header>
   );

@@ -58,12 +58,16 @@ export const SUBTOPICS: SubTopic[] = [
   { id: 'sb2', topicId: 'bio', label: 'Genomics' },
   { id: 'sc1', topicId: 'cs', label: 'Algorithms' },
   { id: 'sc2', topicId: 'cs', label: 'Systems & Architecture' },
+  { id: 'sc3', topicId: 'cs', label: 'Quantum Cryptography' },
   { id: 'sch1', topicId: 'chem', label: 'Organic Synthesis' },
   { id: 'sch2', topicId: 'chem', label: 'Molecular Dynamics' },
   { id: 'sph1', topicId: 'phil', label: 'Epistemology' },
   { id: 'sph2', topicId: 'phil', label: 'Ethics of AI' },
   { id: 'sen1', topicId: 'eng', label: 'Robotics' },
   { id: 'smd1', topicId: 'med', label: 'Neuroscience' },
+  { id: 'sq4', topicId: 'quantum', label: 'Quantum Sensing' },
+  { id: 'sm3', topicId: 'math', label: 'Spectral Theory' },
+  { id: 'sb3', topicId: 'bio', label: 'Neuroquantum Interfaces' },
 ];
 
 export const TOPIC_EDGES: Edge[] = [
@@ -144,6 +148,11 @@ export const NODES: Node[] = [
   { id: 'n10', subject: 'bio', subTopicId: 'sb2', title: 'CRISPR-Cas9 target specificity in thermophiles', status: 'active', activity: 41, asker: 'Elena R.', time: '1h ago' },
   { id: 'nb1', subject: 'bio', subTopicId: 'sb1', title: 'Magnetic sensing in birds — radical pair mechanism', status: 'pending', activity: 12, asker: 'Priya S.', time: '3h ago' },
   { id: 'nb2', subject: 'bio', subTopicId: 'sb2', title: 'Single-cell ATAC-seq noise modeling', status: 'solved', activity: 90, asker: 'Dr. Aris V.', time: '12h ago' },
+  { id: 'nb3', subject: 'bio', subTopicId: 'sb3', title: 'Neuroquantum interface patterns in hippocampal rhythms', status: 'active', activity: 27, asker: 'Sarah Jenkins', time: '40m ago' },
+  { id: 'nqA1', subject: 'quantum', subTopicId: 'sq4', title: 'Quantum sensors reading biological oscillators without collapse', status: 'active', activity: 34, asker: 'Leo T.', time: '2h ago' },
+  { id: 'nqA2', subject: 'quantum', subTopicId: 'sq4', title: 'Entangled magnetometry for cellular mapping?', status: 'pending', activity: 18, asker: 'Sarah K.', time: '1h ago' },
+  { id: 'nmA1', subject: 'math', subTopicId: 'sm3', title: 'Spectral theory heuristics for operator networks', status: 'active', activity: 31, asker: 'Julian V.', time: '3h ago' },
+  { id: 'ncA1', subject: 'cs', subTopicId: 'sc3', title: 'Quantum key distribution across heterogeneous fiber links', status: 'active', activity: 26, asker: 'Alex Rivera', time: '45m ago' },
 
   // CHEM (sch1, sch2)
   { id: 'nch1', subject: 'chem', subTopicId: 'sch1', title: 'Chiral catalysts for asymmetrical synthesis', status: 'active', activity: 25, asker: 'Sarah Jenkins', time: '2h ago' },
@@ -172,6 +181,13 @@ export const EDGES: Edge[] = [
   { source: 'nch2', target: 'n3', type: 'similarity' },
   { source: 'nm3', target: 'nb2', type: 'concept' },
   { source: 'ne1', target: 'nc1', type: 'similarity' },
+  { source: 'nqA1', target: 'nb3', type: 'concept' },
+  { source: 'nqA1', target: 'n6', type: 'similarity' },
+  { source: 'nqA2', target: 'nb3', type: 'similarity' },
+  { source: 'nmA1', target: 'n2', type: 'concept' },
+  { source: 'nmA1', target: 'n5', type: 'similarity' },
+  { source: 'ncA1', target: 'n9', type: 'concept' },
+  { source: 'ncA1', target: 'nc2', type: 'similarity' },
 ];
 
 export const USERS: User[] = [
@@ -210,6 +226,22 @@ export const ANSWERS: Answer[] = [
   { id: 'a22', nodeId: 'nb2', authorId: 'u4', body: "Sparsity is the biggest issue. Using deep generative models like scVI has proven very effective in imputing missing peaks and modeling the noise.", upvotes: 85, isTopInsight: true, isExpert: true, time: '2h ago' },
   { id: 'a23', nodeId: 'nch1', authorId: 'u8', body: "BINAP is a classic example. Its rigid, chiral framework forces incoming substrates into specific steric orientations, drastically favoring one enantiomer over another.", upvotes: 90, isTopInsight: true, isExpert: true, time: '4h ago' },
   { id: 'a24', nodeId: 'nch2', authorId: 'u5', body: "QM/MM partitions the system: the chromophore uses high-level QM methods while the surrounding opsin protein is treated with classically parameterized MM force fields.", upvotes: 110, isTopInsight: true, isExpert: true, time: '1d ago' },
+  { id: 'a25', nodeId: 'n1', authorId: 'u2', body: "When silicon is pushed into the quantum regime, decoherence dictates your operating temperature; we now use diluted refrigerators to keep the wave nature alive.", upvotes: 32, isTopInsight: false, isExpert: false, time: '1h ago' },
+  { id: 'a26', nodeId: 'n1', authorId: 'u1', body: "The duality shows up when you compare the interference patterns with the momentum distribution; the more you measure momentum, the more the position collapses.", upvotes: 18, isTopInsight: false, isExpert: false, time: '45m ago' },
+  { id: 'a27', nodeId: 'n2', authorId: 'u3', body: "The separation still requires a hidden constant of motion, but once you isolate it, the spatial part obeys the Sturm-Liouville problem, giving rise to the stationary equation.", upvotes: 26, isTopInsight: false, isExpert: false, time: '2h ago' },
+  { id: 'a28', nodeId: 'n2', authorId: 'u8', body: "It becomes clearer if you treat the temporal part as a phase factor that drops out once you normalize the solution, leaving the familiar eigenvalue problem.", upvotes: 24, isTopInsight: false, isExpert: true, time: '1h ago' },
+  { id: 'a29', nodeId: 'n3', authorId: 'u1', body: "ATP synthase forms a channel where protons tunnel through, which is why the rate can exceed classical transition state theory by orders of magnitude.", upvotes: 19, isTopInsight: false, isExpert: false, time: '30m ago' },
+  { id: 'a30', nodeId: 'n3', authorId: 'u7', body: "Enzyme active sites behave like quantum wells; you can calculate the tunneling current and match it to the reaction rate constant.", upvotes: 44, isTopInsight: true, isExpert: true, time: '18m ago' },
+  { id: 'a31', nodeId: 'nb3', authorId: 'u5', body: "Oscillatory hippocampal rhythms may coordinate with quantum sensors by aligning their phase across large neural ensembles.", upvotes: 28, isTopInsight: true, isExpert: true, time: '35m ago' },
+  { id: 'a32', nodeId: 'nb3', authorId: 'u3', body: "I am exploring how biophotons within neurons might interact with entangled photons; the synchronization is subtle but measurable.", upvotes: 13, isTopInsight: false, isExpert: false, time: '30m ago' },
+  { id: 'a33', nodeId: 'nqA1', authorId: 'u7', body: "Weak measurement protocols let you amplify a biological rhythm signal while leaving its quantum correlations mostly intact.", upvotes: 35, isTopInsight: true, isExpert: true, time: '2h ago' },
+  { id: 'a34', nodeId: 'nqA1', authorId: 'u2', body: "Just tune the sensor to avoid strong coupling; a gentle dispersive readout keeps the phase coherence longer.", upvotes: 16, isTopInsight: false, isExpert: false, time: '1h ago' },
+  { id: 'a35', nodeId: 'nqA2', authorId: 'u5', body: "Entangled magnetometers can track a field gradient across cells, letting you map clusters without needing a classical probe at each point.", upvotes: 27, isTopInsight: true, isExpert: true, time: '1h ago' },
+  { id: 'a36', nodeId: 'nqA2', authorId: 'u1', body: "Cells create tiny magnetic anomalies via ion channels, which our entangled sensors read by correlating simultaneous detections.", upvotes: 12, isTopInsight: false, isExpert: false, time: '53m ago' },
+  { id: 'a37', nodeId: 'nmA1', authorId: 'u8', body: "Spectral gaps correspond directly to stability in networks; more symmetric operators give you clearer bands, which is why we push for representation theory here.", upvotes: 46, isTopInsight: true, isExpert: true, time: '40m ago' },
+  { id: 'a38', nodeId: 'nmA1', authorId: 'u4', body: "The Rayleigh quotient helps compute the eigenvalues and reveals how the energy budget distributes across the network.", upvotes: 23, isTopInsight: false, isExpert: true, time: '30m ago' },
+  { id: 'a39', nodeId: 'ncA1', authorId: 'u6', body: "You can multiplex QKD over fibers by weaving in entanglement-based protocols with decoy states, which keeps the key distribution secure even with channel losses.", upvotes: 39, isTopInsight: true, isExpert: false, time: '45m ago' },
+  { id: 'a40', nodeId: 'ncA1', authorId: 'u3', body: "We already manage fiber heterogeneity by calibrating polarizations at every repeater; QKD just needs more precise drift compensation.", upvotes: 21, isTopInsight: false, isExpert: false, time: '38m ago' },
 ];
 
 export const CONNECTED_NODES_MAP: Record<string, Array<{ nodeId: string; match: number; description: string }>> = {

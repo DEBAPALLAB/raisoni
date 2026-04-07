@@ -30,12 +30,6 @@ export default function AnswerCard({ answer, isAsker }: AnswerCardProps) {
         position: 'relative',
       }}
     >
-      {answer.isTopInsight && (
-        <div style={{ position: 'absolute', top: 12, right: 12 }}>
-          <Badge variant="amber">TOP INSIGHT</Badge>
-        </div>
-      )}
-
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
         <Avatar name={author.name} color={author.color} size={36} />
         <div>
@@ -49,6 +43,9 @@ export default function AnswerCard({ answer, isAsker }: AnswerCardProps) {
             <Badge variant={answer.isExpert ? 'green' : 'gray'}>
               {answer.isExpert ? 'EXPERT' : 'STUDENT'}
             </Badge>
+            {answer.isTopInsight && (
+              <Badge variant="amber">TOP INSIGHT</Badge>
+            )}
           </div>
           <div className="section-label" style={{ fontSize: 10, marginTop: 2 }}>
             {answer.time}
