@@ -193,9 +193,23 @@ export const ANSWERS: Answer[] = [
   { id: 'a5', nodeId: 'nm3', authorId: 'u4', body: "LTP at the CA1 synapse is mediated by NMDA receptor activation leading to AMPA receptor insertion. The calcium influx is the critical trigger for the signaling cascade.", upvotes: 75, isTopInsight: true, isExpert: true, time: 'Online Now' },
   { id: 'a6', nodeId: 'n3', authorId: 'u3', body: "Hydrogen tunneling in enzymes allows reaction rates way beyond classical Arrhenius predictions. It's essentially the wave-nature of the proton finding a path through the barrier.", upvotes: 48, isTopInsight: false, isExpert: false, time: '12m ago' },
   { id: 'a7', nodeId: 'ne1', authorId: 'u1', body: "Hysteresis in soft actuators makes standard PID loop design difficult. You usually need an inverse model or a machine learning based compensator for high-precision tasks.", upvotes: 22, isTopInsight: false, isExpert: false, time: '3h ago' },
-  // More brief answers to pad the UI
   { id: 'a8', nodeId: 'nph1', authorId: 'u1', body: "Bayesianism is fundamentally about updating priors based on evidence, whereas Frequentism focuses on long-run frequencies in repeatable experiments.", upvotes: 34, isTopInsight: false, isExpert: false, time: '1d ago' },
   { id: 'a9', nodeId: 'n1', authorId: 'u5', body: "Silicon nanostructures at these scales are essentially quantum wires. Signal loss happens due to quantum interference patterns forming back-scatter nodes.", upvotes: 68, isTopInsight: true, isExpert: true, time: '2h ago' },
+  { id: 'a10', nodeId: 'n4', authorId: 'u8', body: "While controversial, Penrose and Hameroff argue that microtubules might temporarily support macroscopic quantum coherence before objective reduction occurs.", upvotes: 41, isTopInsight: true, isExpert: true, time: '1h ago' },
+  { id: 'a11', nodeId: 'n8', authorId: 'u7', body: "The probability density function is represented by the square modulus of the wave function corresponding to the gate's output state vector.", upvotes: 89, isTopInsight: true, isExpert: true, time: '15m ago' },
+  { id: 'a12', nodeId: 'nq2', authorId: 'u6', body: "Surface codes are highly effective because they only require nearest-neighbor interactions and have a relatively high error threshold (~1%).", upvotes: 62, isTopInsight: true, isExpert: false, time: '30m ago' },
+  { id: 'a13', nodeId: 'n2', authorId: 'u4', body: "By using the separation of variables method on the full time-dependent equation, factoring the wavefunction into spatial and temporal parts.", upvotes: 55, isTopInsight: true, isExpert: true, time: '2h ago' },
+  { id: 'a14', nodeId: 'n5', authorId: 'u2', body: "Group theory perfectly models crystal symmetries. There are exactly 230 distinct space groups describing all possible 3D crystal structures.", upvotes: 30, isTopInsight: false, isExpert: false, time: '4h ago' },
+  { id: 'a15', nodeId: 'nm1', authorId: 'u4', body: "Galois fields (finite fields) are the foundation of AES and elliptic curve cryptography because they allow arithmetic operations without rounding errors.", upvotes: 120, isTopInsight: true, isExpert: true, time: '20m ago' },
+  { id: 'a16', nodeId: 'nm2', authorId: 'u2', body: "Persistent homology helps identify fundamental structures (like loops or voids) in high-dimensional genomic datasets that might correlate with specific phenotypes.", upvotes: 45, isTopInsight: false, isExpert: false, time: '5h ago' },
+  { id: 'a17', nodeId: 'n7', authorId: 'u6', body: "Unlike classical bits (0 or 1), a qubit can be in a superposition of both, meaning a quantum gate intrinsically performs parallel operations on all superimposed states.", upvotes: 77, isTopInsight: true, isExpert: false, time: '4h ago' },
+  { id: 'a18', nodeId: 'n9', authorId: 'u5', body: "Currently, NISQ hardware limits Shor's algorithm due to inadequate error correction, confining it to factoring very small integers like 15 or 21.", upvotes: 95, isTopInsight: true, isExpert: true, time: '1h ago' },
+  { id: 'a19', nodeId: 'nc2', authorId: 'u1', body: "Using an L4-style micro-kernel minimizes context switching overhead, critical for precise hardware telemetry loops.", upvotes: 60, isTopInsight: false, isExpert: false, time: '2d ago' },
+  { id: 'a20', nodeId: 'n10', authorId: 'u3', body: "Thermophiles require more stable gRNA structures and robust Cas variant proteins to prevent denaturation at extreme temperatures.", upvotes: 70, isTopInsight: true, isExpert: false, time: '12h ago' },
+  { id: 'a21', nodeId: 'nb1', authorId: 'u8', body: "The radical pair mechanism in cryptochrome proteins creates a quantum entangled pair whose recombination kinetics are sensitive to the Earth's weak magnetic field.", upvotes: 150, isTopInsight: true, isExpert: true, time: '6h ago' },
+  { id: 'a22', nodeId: 'nb2', authorId: 'u4', body: "Sparsity is the biggest issue. Using deep generative models like scVI has proven very effective in imputing missing peaks and modeling the noise.", upvotes: 85, isTopInsight: true, isExpert: true, time: '2h ago' },
+  { id: 'a23', nodeId: 'nch1', authorId: 'u8', body: "BINAP is a classic example. Its rigid, chiral framework forces incoming substrates into specific steric orientations, drastically favoring one enantiomer over another.", upvotes: 90, isTopInsight: true, isExpert: true, time: '4h ago' },
+  { id: 'a24', nodeId: 'nch2', authorId: 'u5', body: "QM/MM partitions the system: the chromophore uses high-level QM methods while the surrounding opsin protein is treated with classically parameterized MM force fields.", upvotes: 110, isTopInsight: true, isExpert: true, time: '1d ago' },
 ];
 
 export const CONNECTED_NODES_MAP: Record<string, Array<{ nodeId: string; match: number; description: string }>> = {
@@ -211,11 +225,92 @@ export const CONNECTED_NODES_MAP: Record<string, Array<{ nodeId: string; match: 
   nm3: [
     { nodeId: 'nb2', match: 88, description: 'Genomic expression of plasticity markers' },
     { nodeId: 'nb1', match: 52, description: 'Biological sensing across networks' },
+    { nodeId: 'n3', match: 40, description: 'ATP mechanisms connecting' }
   ],
   nc1: [
     { nodeId: 'ne1', match: 77, description: 'Control systems for distributed agents' },
     { nodeId: 'nc2', match: 85, description: 'Kernel support for high-latency protocols' },
   ],
+  n4: [
+    { nodeId: 'n6', match: 88, description: 'Observer effect in macroscale exactly mirrors Cat paradox' },
+    { nodeId: 'n3', match: 71, description: 'Enzymatic quantum tunneling as a biological macroscale quantum system' },
+  ],
+  n8: [
+    { nodeId: 'nq2', match: 81, description: 'Surface code implementation bounds' },
+    { nodeId: 'n9', match: 78, description: 'Shor algorithm probability mapping' },
+  ],
+  nq1: [
+    { nodeId: 'nq2', match: 95, description: 'Superconducting qubit optimizations' },
+    { nodeId: 'n6', match: 74, description: 'Decoherence limits in qubits' },
+  ],
+  nq2: [
+    { nodeId: 'nq1', match: 95, description: 'Qubit architecture alignment' },
+    { nodeId: 'n9', match: 82, description: 'NISQ era boundary restrictions' },
+  ],
+  n2: [
+    { nodeId: 'n5', match: 60, description: 'Mathematical framing in crystalline lattices' },
+    { nodeId: 'nm1', match: 55, description: 'Galois representations of equations' },
+  ],
+  n5: [
+    { nodeId: 'nch1', match: 65, description: 'Symmetry groups heavily relied on in chirality' },
+    { nodeId: 'n2', match: 60, description: 'Structural math symmetries' },
+  ],
+  nm1: [
+    { nodeId: 'nc1', match: 70, description: 'Cryptography limits inside consensus protocols' },
+    { nodeId: 'n9', match: 85, description: 'Shor algorithm breaking Galois based encryptions' }
+  ],
+  nm2: [
+    { nodeId: 'nb2', match: 92, description: 'TDA applied to scATAC-seq manifolds' },
+    { nodeId: 'n10', match: 45, description: 'Understanding large thermophile sequences' }
+  ],
+  n7: [
+    { nodeId: 'n1', match: 80, description: 'Gate operation equivalents in silicon' },
+    { nodeId: 'n8', match: 88, description: 'Parallel probability density across logic layers' }
+  ],
+  n9: [
+    { nodeId: 'nq2', match: 83, description: 'NISQ bounds governed by error thresholding' },
+    { nodeId: 'nm1', match: 85, description: 'Classical encryption breaking algorithms' }
+  ],
+  nc2: [
+    { nodeId: 'nc1', match: 85, description: 'Distributed consensus inside micro-kernels' },
+    { nodeId: 'ne1', match: 68, description: 'Hardware telemetry maps to robotic feedback loops' }
+  ],
+  n3: [
+    { nodeId: 'n4', match: 71, description: 'Quantum tunneling connects to macro-biological phenomena' },
+    { nodeId: 'nch2', match: 82, description: 'Isomerisation requires quantum biological models' },
+  ],
+  n10: [
+    { nodeId: 'nb2', match: 65, description: 'Gene editing analysis maps to ATAC-seq validation' },
+    { nodeId: 'nch1', match: 50, description: 'Synthesis required for synthetic targets' }
+  ],
+  nb1: [
+    { nodeId: 'nph1', match: 42, description: 'Epistemology behind perceiving magnetic anomalies' },
+    { nodeId: 'n3', match: 88, description: 'Radical pairs relate strongly to quantum tunnels conceptually' }
+  ],
+  nb2: [
+    { nodeId: 'nm3', match: 88, description: 'Plasticity relies on ATAC-seq mapping at multi-layer levels' },
+    { nodeId: 'nm2', match: 92, description: 'TDA applications for ATAC peaks' }
+  ],
+  nch1: [
+    { nodeId: 'n5', match: 65, description: 'Crystal symmetry relates to chiral frameworks' },
+    { nodeId: 'nch2', match: 72, description: 'Synthesis optimization for complex isomers' }
+  ],
+  nch2: [
+    { nodeId: 'n3', match: 82, description: 'QM/MM relates to biological modeling of energy barriers' },
+    { nodeId: 'nch1', match: 72, description: 'Simulation of physical constraints' }
+  ],
+  nph1: [
+    { nodeId: 'nph2', match: 76, description: 'Alignment of AI using bayesian inference mechanisms' },
+    { nodeId: 'nb1', match: 42, description: 'Interpretations of unseen phenomena' }
+  ],
+  nph2: [
+    { nodeId: 'nph1', match: 76, description: 'Philosophy maps deeply back to bayesian systems' },
+    { nodeId: 'nc1', match: 60, description: 'AI agents mapped in distributed setups' }
+  ],
+  ne1: [
+    { nodeId: 'nc1', match: 77, description: 'Distributed systems govern many robotic endpoints' },
+    { nodeId: 'nc2', match: 68, description: 'Telemetry control relies on PID implementations' }
+  ]
 };
 
 
