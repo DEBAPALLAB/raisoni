@@ -2,9 +2,42 @@ export type Subject = 'quantum' | 'math' | 'bio' | 'cs';
 export type NodeStatus = 'solved' | 'active' | 'pending';
 export type EdgeType = 'similarity' | 'concept';
 
+export interface Topic {
+  id: Subject;
+  label: string;
+  color: string;
+  icon: string;
+}
+
+export interface SubTopic {
+  id: string;
+  topicId: Subject;
+  label: string;
+}
+
+export const TOPICS: Topic[] = [
+  { id: 'quantum', label: 'Quantum Physics', color: '#7C6EE6', icon: 'Ψ' },
+  { id: 'math', label: 'Mathematics', color: '#EC4899', icon: 'Σ' },
+  { id: 'bio', label: 'Biotechnology', color: '#10B981', icon: '⊕' },
+  { id: 'cs', label: 'Computer Science', color: '#3B82F6', icon: '⊞' },
+];
+
+export const SUBTOPICS: SubTopic[] = [
+  { id: 'sq1', topicId: 'quantum', label: 'Wavefunction & Superposition' },
+  { id: 'sq2', topicId: 'quantum', label: 'Decoherence & Measurement' },
+  { id: 'sq3', topicId: 'quantum', label: 'Quantum Computing' },
+  { id: 'sm1', topicId: 'math', label: 'Lattice & Topology' },
+  { id: 'sm2', topicId: 'math', label: 'Abstract Algebra' },
+  { id: 'sb1', topicId: 'bio', label: 'Quantum Biology' },
+  { id: 'sb2', topicId: 'bio', label: 'Genomics' },
+  { id: 'sc1', topicId: 'cs', label: 'Algorithms' },
+  { id: 'sc2', topicId: 'cs', label: 'Systems & Architecture' },
+];
+
 export interface Node {
   id: string;
   subject: Subject;
+  subTopicId?: string;
   title: string;
   status: NodeStatus;
   activity: number;
@@ -47,6 +80,7 @@ export const NODES: Node[] = [
   {
     id: 'n1',
     subject: 'quantum',
+    subTopicId: 'sq1',
     title: 'How does wave-particle duality affect signal transmission in silicon nanostructures?',
     status: 'solved',
     activity: 24,
@@ -56,6 +90,7 @@ export const NODES: Node[] = [
   {
     id: 'n2',
     subject: 'math',
+    subTopicId: 'sm1',
     title: "Schrödinger's Equation Basis — deriving the time-independent form",
     status: 'active',
     activity: 12,
@@ -65,6 +100,7 @@ export const NODES: Node[] = [
   {
     id: 'n3',
     subject: 'bio',
+    subTopicId: 'sb1',
     title: 'Enzymatic Quantum Tunneling in ATP synthesis pathways',
     status: 'active',
     activity: 48,
@@ -75,6 +111,7 @@ export const NODES: Node[] = [
   {
     id: 'n4',
     subject: 'quantum',
+    subTopicId: 'sq1',
     title: "Can Schrödinger's Cat exist in macro-scale biological systems?",
     status: 'pending',
     activity: 3,
@@ -84,6 +121,7 @@ export const NODES: Node[] = [
   {
     id: 'n5',
     subject: 'math',
+    subTopicId: 'sm1',
     title: 'Lattice Theory and crystal symmetry groups — intro resources?',
     status: 'solved',
     activity: 6,
@@ -93,6 +131,7 @@ export const NODES: Node[] = [
   {
     id: 'n6',
     subject: 'quantum',
+    subTopicId: 'sq2',
     title: 'How does the observer effect impact wave function collapse in larger molecular structures?',
     status: 'solved',
     activity: 47,
@@ -102,6 +141,7 @@ export const NODES: Node[] = [
   {
     id: 'n7',
     subject: 'cs',
+    subTopicId: 'sc1',
     title: 'Quantum computing gate operations — superposition vs classical bit states',
     status: 'active',
     activity: 19,
@@ -111,6 +151,7 @@ export const NODES: Node[] = [
   {
     id: 'n8',
     subject: 'quantum',
+    subTopicId: 'sq3',
     title: 'Probability density functions in logic gate states at quantum scale',
     status: 'pending',
     activity: 82,
@@ -121,6 +162,7 @@ export const NODES: Node[] = [
   {
     id: 'n9',
     subject: 'cs',
+    subTopicId: 'sc1',
     title: 'Implementing Shor\'s algorithm on NISQ-era hardware — complexity bounds?',
     status: 'pending',
     activity: 15,
@@ -131,6 +173,7 @@ export const NODES: Node[] = [
   {
     id: 'n10',
     subject: 'bio',
+    subTopicId: 'sb2',
     title: 'CRISPR-Cas9 target specificity in extreme thermophiles',
     status: 'active',
     activity: 31,
