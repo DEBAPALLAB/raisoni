@@ -201,14 +201,31 @@ export default function NodePanel({ node, onClose }: NodePanelProps) {
 
       {/* ── Footer CTA ──────────────────────────────────────── */}
       <div style={{
-        padding: '12px 16px', borderTop: '1px solid var(--border-subtle)',
-        display: 'flex', gap: 8,
+        padding: '16px', borderTop: '1px solid var(--border-subtle)',
+        display: 'flex', flexDirection: 'column', gap: 10,
+        background: 'var(--bg-elevated)',
+        borderBottomLeftRadius: 16, borderBottomRightRadius: 16,
       }}>
-        <button className="btn-ghost" style={{ flex: 1, fontSize: 11 }}>Save Path</button>
-        <button className="btn-filled" style={{ flex: 1, fontSize: 11 }}
-          onClick={() => router.push(`/node/${node.id}`)}>
-          Collaborate
+        <button 
+          className="btn-filled" 
+          style={{ 
+            width: '100%', height: 44, fontSize: 13, fontWeight: 700, 
+            borderRadius: 12, boxShadow: '0 4px 12px rgba(79, 70, 229, 0.25)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8
+          }}
+          onClick={() => router.push(`/node/${node.id}`)}
+        >
+          <span>View Full Discussion</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
         </button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button className="btn-ghost" style={{ flex: 1, fontSize: 12, borderRadius: 10, background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)' }}>
+            <span style={{ marginRight: 6 }}>🔖</span> Bookmark
+          </button>
+          <button className="btn-ghost" style={{ flex: 1, fontSize: 12, borderRadius: 10, background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)' }}>
+            <span style={{ marginRight: 6 }}>🔗</span> Copy Link
+          </button>
+        </div>
       </div>
     </div>
   );

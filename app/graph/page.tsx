@@ -3,13 +3,15 @@
 import { Suspense } from 'react';
 import { useState, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { NODES, EDGES, Node, Subject, TOPICS, SUBTOPICS, Topic, SubTopic } from '@/data/seed';
+import { EDGES, Node, Subject, TOPICS, SUBTOPICS } from '@/data/seed';
 import Topbar from '@/components/Topbar';
 import Sidebar from '@/components/Sidebar';
 import NodePanel from '@/components/NodePanel';
 import AskDoubtModal from '@/components/AskDoubtModal';
 import dynamic from 'next/dynamic';
 import { useTokens } from '@/context/TokenContext';
+import { useKnowledge, getSubTopicForSubject } from '@/context/KnowledgeContext';
+import { useAuth } from '@/context/AuthContext';
 
 const Graph = dynamic(() => import('@/components/Graph'), { ssr: false });
 
@@ -17,13 +19,16 @@ function GraphContent() {
   const searchParams = useSearchParams();
   const preselect = searchParams.get('node');
 
+  const { nodes, addNode } = useKnowledge();
+  const { currentUser } = useAuth();
+  const { spendTokens } = useTokens();
+
   const [viewLayer, setViewLayer] = useState<'topics' | 'subtopics' | 'questions'>('topics');
   const [activeTopicId, setActiveTopicId] = useState<string | null>(null);
   const [activeSubTopicId, setActiveSubTopicId] = useState<string | null>(null);
 
-  const [allNodes, setAllNodes] = useState<Node[]>(NODES);
   const [selectedNode, setSelectedNode] = useState<Node | null>(
-    preselect ? NODES.find((n) => n.id === preselect) ?? null : null
+    preselect ? nodes.find((n) => n.id === preselect) ?? null : null
   );
   const [activeFilters, setActiveFilters] = useState<Subject[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -32,7 +37,12 @@ function GraphContent() {
   const getGraphNodes = () => {
     if (viewLayer === 'topics') return TOPICS;
     if (viewLayer === 'subtopics') return SUBTOPICS.filter(s => s.topicId === activeTopicId);
-    return allNodes.filter(n => n.subTopicId === activeSubTopicId);
+    // Apply subject filters at questions layer
+    let questionNodes = nodes.filter(n => n.subTopicId === activeSubTopicId);
+    if (activeFilters.length > 0) {
+      questionNodes = questionNodes.filter(n => activeFilters.includes(n.subject));
+    }
+    return questionNodes;
   };
 
   const handleDrillDown = useCallback((id: string) => {
@@ -74,30 +84,38 @@ function GraphContent() {
     setSelectedNode(node);
   }, []);
 
-  const { spendTokens } = useTokens();
-
   const handleAddNode = useCallback((title: string, subject: string, bounty: number) => {
     const subjectMap: Record<string, Subject> = {
-      'Quantum Mechanics': 'quantum', Mathematics: 'math', Biotechnology: 'bio', 'Computer Science': 'cs', Topology: 'math',
+      quantum: 'quantum', math: 'math', bio: 'bio', cs: 'cs',
+      chem: 'chem', eng: 'eng', phil: 'phil', med: 'med',
+      'Quantum Mechanics': 'quantum', Mathematics: 'math',
+      Biotechnology: 'bio', 'Computer Science': 'cs',
     };
 
-    const nodeId = `n${Date.now()}`;
-    if (bounty > 0) spendTokens(bounty, `Bounty for: ${title.slice(0, 30)}...`, nodeId);
+    const resolvedSubject = (subjectMap[subject] ?? 'quantum') as Subject;
+    const nodeId = `node_${Date.now()}`;
+
+    if (bounty > 0) {
+      spendTokens(bounty, `Bounty: ${title.slice(0, 30)}`, nodeId);
+    }
+
+    const subTopicId =
+      activeSubTopicId ?? getSubTopicForSubject(resolvedSubject) ?? 'sq1';
 
     const newNode: Node = {
       id: nodeId,
-      subject: (subjectMap[subject] ?? 'quantum') as Subject,
+      subject: resolvedSubject,
       title,
       status: 'active',
       activity: 1,
-      asker: 'Alex Rivera',
+      asker: currentUser?.name ?? 'Anonymous',
       time: 'just now',
       isNew: true,
-      subTopicId: activeSubTopicId || 'sq1', // Default to current drift or sq1
+      subTopicId,
     };
 
-    setAllNodes((prev) => [...prev, newNode]);
-  }, [spendTokens, activeSubTopicId]);
+    addNode(newNode);
+  }, [spendTokens, activeSubTopicId, currentUser, addNode]);
 
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: '#F8F9FF' }}>

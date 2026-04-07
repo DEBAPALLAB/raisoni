@@ -38,25 +38,6 @@ export default function Sidebar({ activeFilters, onFilterToggle }: SidebarProps)
       display: 'flex', flexDirection: 'column',
       flexShrink: 0,
     }}>
-      {/* ── Branding ── */}
-      <div style={{ padding: '32px 24px' }}>
-        <div className="font-outfit" style={{
-          fontSize: 14, fontWeight: 900, letterSpacing: '0.25em',
-          color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: 10
-        }}>
-          <div style={{ 
-            width: 24, height: 24, background: 'var(--accent-primary)', 
-            borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: '#fff', fontSize: 14
-          }}>S</div>
-          SOLVI
-        </div>
-        <div style={{ 
-          fontSize: 9, fontWeight: 700, color: 'var(--accent-primary)', 
-          marginTop: 4, letterSpacing: '0.1em' 
-        }}>LEXICON EXPLORER</div>
-      </div>
-
       {/* ── Nav ── */}
       <nav style={{ flex: 1, padding: '0 12px' }}>
         {navItems.map((item) => {

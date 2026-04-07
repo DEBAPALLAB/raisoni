@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useTokens } from '@/context/TokenContext';
+import { useKnowledge } from '@/context/KnowledgeContext';
 import { useAuth } from '@/context/AuthContext';
 import Avatar from './Avatar';
 import StreakPopover from './StreakPopover';
@@ -14,8 +14,9 @@ interface TopbarProps {
 
 export default function Topbar({ onAskDoubt }: TopbarProps) {
   const router = useRouter();
-  const { balance } = useTokens();
+  const { getUserBalance } = useKnowledge();
   const { currentUser, logout } = useAuth();
+  const balance = currentUser ? getUserBalance(currentUser.id) : 500;
 
   const [showStreak, setShowStreak] = useState(false);
 

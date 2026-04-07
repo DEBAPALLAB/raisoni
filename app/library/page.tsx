@@ -2,19 +2,60 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { NODES, SUBJECT_COLORS, SUBJECT_LABELS } from '@/data/seed';
+import { SUBJECT_COLORS, SUBJECT_LABELS } from '@/data/seed';
+import { useKnowledge } from '@/context/KnowledgeContext';
 import Topbar from '@/components/Topbar';
 import Sidebar from '@/components/Sidebar';
+import AskDoubtModal from '@/components/AskDoubtModal';
 import Badge from '@/components/Badge';
 import { Subject } from '@/data/seed';
+import { useAuth } from '@/context/AuthContext';
+import { useTokens } from '@/context/TokenContext';
+import { getSubTopicForSubject } from '@/context/KnowledgeContext';
 
 export default function LibraryPage() {
   const [activeFilters, setActiveFilters] = useState<Subject[]>([]);
   const [showModal, setShowModal] = useState(false);
 
-  const filteredNodes = activeFilters.length > 0 
-    ? NODES.filter(n => activeFilters.includes(n.subject))
-    : NODES;
+  const { nodes, addNode } = useKnowledge();
+  const { currentUser } = useAuth();
+  const { spendTokens } = useTokens();
+
+  const filteredNodes = activeFilters.length > 0
+    ? nodes.filter(n => activeFilters.includes(n.subject))
+    : nodes;
+
+  // Sort: newest first (user-created nodes have id starting with "node_")
+  const sortedNodes = [...filteredNodes].sort((a, b) => {
+    if (a.isNew && !b.isNew) return -1;
+    if (!a.isNew && b.isNew) return 1;
+    return 0;
+  });
+
+  const handleAddNode = (title: string, subject: string, bounty: number) => {
+    const subjectMap: Record<string, Subject> = {
+      quantum: 'quantum', math: 'math', bio: 'bio', cs: 'cs',
+      chem: 'chem', eng: 'eng', phil: 'phil', med: 'med',
+      'Quantum Mechanics': 'quantum', Mathematics: 'math',
+      Biotechnology: 'bio', 'Computer Science': 'cs',
+    };
+    const resolvedSubject = (subjectMap[subject] ?? 'quantum') as Subject;
+    const nodeId = `node_${Date.now()}`;
+    if (bounty > 0) spendTokens(bounty, `Bounty: ${title.slice(0, 30)}`, nodeId);
+
+    addNode({
+      id: nodeId,
+      subject: resolvedSubject,
+      title,
+      status: 'active',
+      activity: 1,
+      asker: currentUser?.name ?? 'Anonymous',
+      time: 'just now',
+      isNew: true,
+      subTopicId: getSubTopicForSubject(resolvedSubject) ?? 'sq1',
+    });
+    setShowModal(false);
+  };
 
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
@@ -34,7 +75,7 @@ export default function LibraryPage() {
                   Knowledge Library
                 </h1>
                 <p className="font-dm-mono" style={{ fontSize: 13, color: 'var(--text-muted)', letterSpacing: '0.02em' }}>
-                  EXPLORE {NODES.length} NODES ACROSS THE NETWORK
+                  EXPLORE {sortedNodes.length} NODES ACROSS THE NETWORK
                 </p>
               </div>
               <div style={{ display: 'flex', gap: 12 }}>
@@ -59,7 +100,7 @@ export default function LibraryPage() {
                 <span className="section-label">ACTIVITY</span>
               </div>
 
-              {filteredNodes.map((node) => (
+              {sortedNodes.map((node) => (
                 <Link 
                   key={node.id} 
                   href={`/node/${node.id}`}
@@ -69,15 +110,24 @@ export default function LibraryPage() {
                     display: 'grid', 
                     gridTemplateColumns: '80px 1fr 140px 100px 100px',
                     padding: '16px',
-                    background: 'var(--bg-surface)',
+                    background: node.isNew ? 'rgba(79, 70, 229, 0.02)' : 'var(--bg-surface)',
                     borderBottom: '1px solid var(--border-subtle)',
                     borderRadius: 0,
                     alignItems: 'center'
                   }}>
-                    <span className="font-dm-mono" style={{ fontSize: 12, color: 'var(--text-muted)' }}>{node.id.toUpperCase()}</span>
-                    <span className="font-syne" style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', paddingRight: 20 }}>
-                      {node.title}
+                    <span className="font-dm-mono" style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                      {node.id.slice(0, 8).toUpperCase()}
                     </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingRight: 20 }}>
+                      <span className="font-syne" style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {node.title}
+                      </span>
+                      {node.isNew && (
+                        <span style={{ fontSize: 9, fontWeight: 800, color: 'var(--accent-primary)', background: 'rgba(79,70,229,0.1)', padding: '2px 6px', borderRadius: 4, whiteSpace: 'nowrap' }}>
+                          NEW
+                        </span>
+                      )}
+                    </div>
                     <span style={{ color: SUBJECT_COLORS[node.subject], fontFamily: 'DM Mono', fontSize: 11, textTransform: 'uppercase' }}>
                       {SUBJECT_LABELS[node.subject]}
                     </span>
@@ -94,7 +144,7 @@ export default function LibraryPage() {
               ))}
             </div>
             
-            {filteredNodes.length === 0 && (
+            {sortedNodes.length === 0 && (
               <div style={{ padding: '60px 0', textAlign: 'center', color: 'var(--text-muted)' }}>
                 <div className="font-dm-mono" style={{ fontSize: 14 }}>NO NODES MATCH THE SELECTED FILTERS</div>
               </div>
@@ -102,6 +152,10 @@ export default function LibraryPage() {
           </div>
         </main>
       </div>
+
+      {showModal && (
+        <AskDoubtModal onClose={() => setShowModal(false)} onAddNode={handleAddNode} />
+      )}
     </div>
   );
 }

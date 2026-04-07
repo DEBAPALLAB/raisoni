@@ -8,21 +8,22 @@ import Avatar from '@/components/Avatar';
 import Badge from '@/components/Badge';
 import { useTokens } from '@/context/TokenContext';
 import { useAuth } from '@/context/AuthContext';
+import { useKnowledge } from '@/context/KnowledgeContext';
 import {
-  ANSWERS,
-  NODES,
   SUBJECT_COLORS,
   SUBJECT_LABELS,
   type Subject,
 } from '@/data/seed';
 
 export default function ProfilePage() {
-  const { balance, bounties, transactions } = useTokens();
+  const { bounties, transactions } = useTokens();
   const { currentUser, currentLoginId } = useAuth();
+  const { nodes, answers, getUserBalance } = useKnowledge();
   const [activeFilters, setActiveFilters] = useState<Subject[]>([]);
 
-  const authoredQuestions = NODES.filter((node) => node.asker === currentUser.name);
-  const authoredAnswers = ANSWERS.filter((answer) => answer.authorId === currentUser.id);
+  const balance = currentUser ? getUserBalance(currentUser.id) : 500;
+  const authoredQuestions = nodes.filter((node) => node.asker === currentUser.name);
+  const authoredAnswers = answers.filter((answer) => answer.authorId === currentUser.id);
   const activeBounties = Object.entries(bounties).filter(([, amount]) => amount > 0);
   const totalBountyValue = activeBounties.reduce((sum, [, amount]) => sum + amount, 0);
 
@@ -38,7 +39,7 @@ export default function ProfilePage() {
       tone: SUBJECT_COLORS[node.subject],
     })),
     ...authoredAnswers.slice(0, 2).map((answer) => {
-      const node = NODES.find((entry) => entry.id === answer.nodeId);
+      const node = nodes.find((entry) => entry.id === answer.nodeId);
       return {
         key: answer.id,
         title: node?.title ?? 'Answer',

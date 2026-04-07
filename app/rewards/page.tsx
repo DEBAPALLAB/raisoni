@@ -6,9 +6,9 @@ import Sidebar from '@/components/Sidebar';
 import { useTokens } from '@/context/TokenContext';
 
 const REWARDS_DATA = [
-  { id: 'r1', title: 'Library Pro Pass', category: 'Academic', points: 2500, image: '📚', description: 'Unlock premium research papers and restricted scientific journals for 30 days.' },
+  { id: 'r1', title: 'Zomato Voucher worth 250', category: 'Academic', points: 2500, image: '📚', description: 'Zomato Voucher worth 250' },
   { id: 'r2', title: 'Cloud Credit Bundle', category: 'Computing', points: 5000, image: '☁️', description: 'Get $50 worth of compute credits for high-performance quantum simulations.' },
-  { id: 'r3', title: '1-on-1 Expert Session', category: 'Mentorship', points: 8000, image: '🤝', description: 'A 30-minute private consultation with a verified subject matter expert.' },
+  { id: 'r3', title: 'Spotify Premium 3 months', category: 'Discounts', points: 8000, image: '🤝', description: 'Spotify Premium 3 months' },
   { id: 'r4', title: 'IEEE Membership Sub', category: 'Professional', points: 12000, image: '🎓', description: 'Full annual membership fees covered for the IEEE professional society.' },
   { id: 'r5', title: 'Solvi Merch Pack', category: 'Physical', points: 3500, image: '👕', description: 'Premium hoodie and stickers featuring the Solvi geometric pulse logo.' },
   { id: 'r6', title: 'Conference Travel Grant', category: 'Experience', points: 25000, image: '✈️', description: 'Partial funding for travel and lodging at major tech/science conferences.' },
@@ -32,10 +32,10 @@ export default function RewardsPage() {
 
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: '#F8F9FF' }}>
-      <Topbar onAskDoubt={() => {}} />
+      <Topbar onAskDoubt={() => { }} />
 
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
-        <Sidebar activeFilters={[]} onFilterToggle={() => {}} />
+        <Sidebar activeFilters={[]} onFilterToggle={() => { }} />
 
         <main style={{ flex: 1, overflowY: 'auto', padding: '40px 60px' }}>
           {/* Header Section */}
@@ -51,7 +51,7 @@ export default function RewardsPage() {
             boxShadow: '0 20px 40px rgba(79, 70, 229, 0.2)', color: 'white'
           }}>
             <div style={{ position: 'absolute', top: -100, right: -100, width: 300, height: 300, background: 'rgba(255,255,255,0.1)', borderRadius: '50%' }} />
-            
+
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
                 <div style={{ fontSize: 14, fontWeight: 600, opacity: 0.8, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Available Balance</div>
@@ -71,7 +71,7 @@ export default function RewardsPage() {
           </div>
 
           {/* Rewards Grid */}
-          <div style={{ 
+          <div style={{
             display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 24, paddingBottom: 60
           }}>
             {REWARDS_DATA.map((r) => (
@@ -80,8 +80,8 @@ export default function RewardsPage() {
                 padding: 24, display: 'flex', flexDirection: 'column', transition: 'all 0.3s ease',
                 boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)'
               }}>
-                <div style={{ 
-                  width: 56, height: 56, background: '#F1F5F9', borderRadius: 16, 
+                <div style={{
+                  width: 56, height: 56, background: '#F1F5F9', borderRadius: 16,
                   display: 'flex', alignItems: 'center', justifySelf: 'center', fontSize: 28, marginBottom: 20
                 }}>
                   <div style={{ margin: 'auto' }}>{r.image}</div>
@@ -92,7 +92,7 @@ export default function RewardsPage() {
                 </div>
 
                 <h3 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 12 }}>{r.title}</h3>
-                
+
                 <p style={{ fontSize: 14, color: 'var(--text-muted)', lineHeight: 1.6, flex: 1, marginBottom: 24 }}>
                   {r.description}
                 </p>
@@ -103,7 +103,7 @@ export default function RewardsPage() {
                     <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)' }}>pts</span>
                   </div>
 
-                  <button 
+                  <button
                     onClick={() => handleRedeem(r.id, r.points)}
                     disabled={redeeming === r.id || balance < r.points}
                     style={{

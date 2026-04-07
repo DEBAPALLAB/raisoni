@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 import * as d3 from 'd3';
-import { Node, Edge, Subject, SUBJECT_COLORS, SUBJECT_LABELS, TOPIC_EDGES } from '@/data/seed';
+import { Node, Edge, Subject, SUBJECT_COLORS, SUBJECT_LABELS, TOPIC_EDGES, CONNECTED_NODES_MAP } from '@/data/seed';
 import { useTokens } from '@/context/TokenContext';
 
 interface GraphProps {
@@ -111,8 +111,39 @@ export default function Graph({
     const nodeMap = new Map(simNodes.map((n) => [n.id, n]));
     
     let activeEdges = edges;
-    if (viewLayer === 'topics') activeEdges = TOPIC_EDGES;
-    else if (viewLayer === 'subtopics') activeEdges = [];
+    if (viewLayer === 'topics') {
+      activeEdges = TOPIC_EDGES;
+    } else if (viewLayer === 'subtopics') {
+      // Connect all subtopics in a chain so they don't float away
+      activeEdges = [];
+      for (let i = 0; i < nodes.length - 1; i++) {
+        activeEdges.push({ source: nodes[i].id, target: nodes[i+1].id, type: 'similarity' } as any);
+      }
+    } else {
+      // Questions layer: map out edges based on CONNECTED_NODES_MAP, PLUS a central chain
+      // so disconnected questions don't fly off screen.
+      activeEdges = [];
+      const nodeIds = new Set(nodes.map(n => n.id));
+      
+      // Import the map inline just to pull edges
+      const linkMap = CONNECTED_NODES_MAP;
+      
+      nodes.forEach(n => {
+        const connections = linkMap[n.id] || [];
+        connections.forEach((conn: any) => {
+          if (nodeIds.has(conn.nodeId)) {
+            activeEdges.push({ source: n.id, target: conn.nodeId, type: 'concept' } as any);
+          }
+        });
+      });
+
+      // Provide baseline chain if no edges found to keep force directed graph intact
+      if (activeEdges.length < nodes.length / 2) {
+        for (let i = 0; i < nodes.length - 1; i++) {
+          activeEdges.push({ source: nodes[i].id, target: nodes[i+1].id, type: 'similarity' } as any);
+        }
+      }
+    }
 
     const simLinks: SimLink[] = activeEdges
       .map((e) => {
