@@ -20,6 +20,10 @@ export const TOPICS: Topic[] = [
   { id: 'math', label: 'Mathematics', color: '#EC4899', icon: 'Σ' },
   { id: 'bio', label: 'Biotechnology', color: '#10B981', icon: '⊕' },
   { id: 'cs', label: 'Computer Science', color: '#3B82F6', icon: '⊞' },
+  { id: 'chem', label: 'Chemistry', color: '#F59E0B', icon: '⌬' },
+  { id: 'eng', label: 'Engineering', color: '#6366F1', icon: '⚙' },
+  { id: 'phil', label: 'Philosophy', color: '#8B5CF6', icon: '⧑' },
+  { id: 'med', label: 'Medicine', color: '#EF4444', icon: '⚕' },
 ];
 
 export const SUBTOPICS: SubTopic[] = [
@@ -32,6 +36,22 @@ export const SUBTOPICS: SubTopic[] = [
   { id: 'sb2', topicId: 'bio', label: 'Genomics' },
   { id: 'sc1', topicId: 'cs', label: 'Algorithms' },
   { id: 'sc2', topicId: 'cs', label: 'Systems & Architecture' },
+  { id: 'sch1', topicId: 'chem', label: 'Organic Synthesis' },
+  { id: 'sch2', topicId: 'chem', label: 'Molecular Dynamics' },
+  { id: 'sph1', topicId: 'phil', label: 'Epistemology' },
+  { id: 'sph2', topicId: 'phil', label: 'Ethics of AI' },
+  { id: 'sen1', topicId: 'eng', label: 'Robotics' },
+  { id: 'smd1', topicId: 'med', label: 'Neuroscience' },
+];
+
+export const TOPIC_EDGES: Edge[] = [
+  { source: 'quantum', target: 'math', type: 'concept' },
+  { source: 'cs', target: 'math', type: 'concept' },
+  { source: 'bio', target: 'chem', type: 'concept' },
+  { source: 'chem', target: 'med', type: 'concept' },
+  { source: 'phil', target: 'cs', type: 'concept' },
+  { source: 'quantum', target: 'bio', type: 'concept' },
+  { source: 'eng', target: 'cs', type: 'concept' },
 ];
 
 export interface Node {
