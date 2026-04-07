@@ -33,16 +33,18 @@ export default function Topbar({ onAskDoubt }: TopbarProps) {
       position: 'relative',
     }}>
       {/* ── Brand ─────────────────────────────────────────── */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-         <div style={{
-           width: 32, height: 32, background: 'var(--accent-primary)', borderRadius: 10,
-           display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff',
-           fontFamily: 'Outfit', fontWeight: 800, fontSize: 18,
-         }}>S</div>
-         <div className="font-outfit" style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
-           Solvi
-         </div>
-      </div>
+      <Link href="/" style={{ textDecoration: 'none' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{
+            width: 32, height: 32, background: 'var(--accent-primary)', borderRadius: 10,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff',
+            fontFamily: 'Outfit', fontWeight: 800, fontSize: 18,
+          }}>S</div>
+          <div className="font-outfit" style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
+            Solvi
+          </div>
+        </div>
+      </Link>
 
       {/* ── Search ────────────────────────────────────────── */}
       <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start', maxWidth: 600 }}>
