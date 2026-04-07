@@ -2,12 +2,14 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Topbar from '@/components/Topbar';
 import Sidebar from '@/components/Sidebar';
 import Avatar from '@/components/Avatar';
 import Badge from '@/components/Badge';
 import AskDoubtModal from '@/components/AskDoubtModal';
-import { USERS, SUBJECT_COLORS, SUBJECT_LABELS, type Subject } from '@/data/seed';
+import { useAuth } from '@/context/AuthContext';
+import { SUBJECT_COLORS, SUBJECT_LABELS, type Subject } from '@/data/seed';
 
 type SettingsState = {
   emailDigest: boolean;
@@ -27,10 +29,11 @@ const DEFAULT_SETTINGS: SettingsState = {
   privacyMode: false,
 };
 
-const CURRENT_USER = USERS.find((user) => user.name === 'Alex Rivera') ?? USERS[0];
 const STORAGE_KEY = 'ethereal_settings';
 
 export default function SettingsPage() {
+  const router = useRouter();
+  const { currentUser, logout } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [activeFilters, setActiveFilters] = useState<Subject[]>([]);
   const [settings, setSettings] = useState<SettingsState>(() => {
@@ -126,22 +129,29 @@ export default function SettingsPage() {
 
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <Badge variant="green">{lastSaved}</Badge>
-                <Link href="/profile" className="btn-pill btn-pill-ghost" style={{ textDecoration: 'none' }}>
-                  View Profile
-                </Link>
+                <button
+                  className="btn-pill btn-pill-ghost"
+                  onClick={() => {
+                    logout();
+                    router.push('/login');
+                  }}
+                  style={{ height: 44, padding: '0 16px' }}
+                >
+                  Sign out
+                </button>
               </div>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 24, marginBottom: 24 }}>
               <section className="card-premium" style={{ padding: 28 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                  <Avatar name={CURRENT_USER.name} color={CURRENT_USER.color} size={72} />
+                  <Avatar name={currentUser.name} color={currentUser.color} size={72} />
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                       <h2 className="font-outfit" style={{ fontSize: 24, fontWeight: 800 }}>
-                        {CURRENT_USER.name}
+                        {currentUser.name}
                       </h2>
-                      <Badge variant="violet">{CURRENT_USER.role}</Badge>
+                      <Badge variant="violet">{currentUser.role}</Badge>
                     </div>
                     <div className="section-label" style={{ marginTop: 6 }}>
                       SETTINGS APPLIED TO THIS PROFILE
@@ -150,7 +160,7 @@ export default function SettingsPage() {
                 </div>
 
                 <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 18 }}>
-                  {CURRENT_USER.expertise.map((subject) => (
+                  {currentUser.expertise.map((subject) => (
                     <span
                       key={subject}
                       style={{
@@ -173,7 +183,7 @@ export default function SettingsPage() {
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 16, marginTop: 22 }}>
-                  <MiniStat label="Reputation" value={CURRENT_USER.reputation.toString()} />
+                  <MiniStat label="Reputation" value={currentUser.reputation.toString()} />
                   <MiniStat label="Theme" value={settings.compactMode ? 'Compact' : 'Comfort'} />
                   <MiniStat label="Privacy" value={settings.privacyMode ? 'On' : 'Off'} />
                 </div>

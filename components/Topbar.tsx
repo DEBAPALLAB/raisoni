@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useTokens } from '@/context/TokenContext';
+import { useAuth } from '@/context/AuthContext';
 import Avatar from './Avatar';
 import StreakPopover from './StreakPopover';
 
@@ -11,7 +13,9 @@ interface TopbarProps {
 }
 
 export default function Topbar({ onAskDoubt }: TopbarProps) {
+  const router = useRouter();
   const { balance } = useTokens();
+  const { currentUser, logout } = useAuth();
 
   const [showStreak, setShowStreak] = useState(false);
 
@@ -131,10 +135,10 @@ export default function Topbar({ onAskDoubt }: TopbarProps) {
             }}
             className="hover-glow"
           >
-            <Avatar name="Alex Rivera" color="#7C6EE6" size={40} />
+            <Avatar name={currentUser.name} color={currentUser.color} size={40} />
             <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>
-                Alex Rivera
+                {currentUser.name}
               </span>
               <span className="section-label" style={{ fontSize: 9 }}>
                 View profile
@@ -142,6 +146,17 @@ export default function Topbar({ onAskDoubt }: TopbarProps) {
             </div>
           </div>
         </Link>
+
+        <button
+          className="btn-pill btn-pill-ghost"
+          onClick={() => {
+            logout();
+            router.push('/login');
+          }}
+          style={{ height: 44, padding: '0 16px', fontSize: 12 }}
+        >
+          Sign out
+        </button>
       </div>
     </header>
   );
