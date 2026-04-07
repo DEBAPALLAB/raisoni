@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 import * as d3 from 'd3';
-import { Node, Edge, Subject, SUBJECT_COLORS, SUBJECT_LABELS } from '@/data/seed';
+import { Node, Edge, Subject, SUBJECT_COLORS, SUBJECT_LABELS, TOPIC_EDGES } from '@/data/seed';
 import { useTokens } from '@/context/TokenContext';
 
 interface GraphProps {
@@ -54,9 +54,9 @@ export default function Graph({
   const { bounties } = useTokens();
 
   const getR = (activity: number = 50) => {
-    if (viewLayer === 'topics') return 80;
-    if (viewLayer === 'subtopics') return 60;
-    return Math.max(44, Math.min(70, 40 + activity * 0.75));
+    if (viewLayer === 'topics') return 95;
+    if (viewLayer === 'subtopics') return 70;
+    return Math.max(48, Math.min(78, 44 + activity * 0.8));
   };
 
   const draw = useCallback(() => {
@@ -86,6 +86,13 @@ export default function Graph({
       .attr('dx', 0).attr('dy', 8).attr('stdDeviation', 14)
       .attr('flood-color', '#CBD5E2').attr('flood-opacity', 0.45);
 
+    const glowFilter = defs.append('filter').attr('id', 'hub-glow')
+      .attr('x', '-50%').attr('y', '-50%').attr('width', '200%').attr('height', '200%');
+    glowFilter.append('feGaussianBlur').attr('stdDeviation', 15).attr('result', 'blur');
+    const feMerge = glowFilter.append('feMerge');
+    feMerge.append('feMergeNode').attr('in', 'blur');
+    feMerge.append('feMergeNode').attr('in', 'SourceGraphic');
+
     svg.append('rect').attr('width', W).attr('height', H).attr('fill', 'url(#graph-backdrop)');
 
     /* ── zoom layer ──────────────────────────────────────────── */
@@ -98,27 +105,39 @@ export default function Graph({
     /* ── sim data ────────────────────────────────────────────── */
     const simNodes: SimNode[] = nodes.map((n) => ({
       ...n,
-      x: W / 2 + (Math.random() - 0.5) * 320,
-      y: H / 2 + (Math.random() - 0.5) * 280,
+      x: W / 2 + (Math.random() - 0.5) * 50,
+      y: H / 2 + (Math.random() - 0.5) * 50,
     }));
     const nodeMap = new Map(simNodes.map((n) => [n.id, n]));
-    const simLinks: SimLink[] = viewLayer === 'questions' ? edges
-      .map((e) => ({ source: nodeMap.get(e.source)!, target: nodeMap.get(e.target)!, type: e.type }))
-      .filter((l) => l.source && l.target) : [];
+    
+    let activeEdges = edges;
+    if (viewLayer === 'topics') activeEdges = TOPIC_EDGES;
+    else if (viewLayer === 'subtopics') activeEdges = [];
+
+    const simLinks: SimLink[] = activeEdges
+      .map((e) => {
+        const s = nodeMap.get(e.source);
+        const t = nodeMap.get(e.target);
+        if (s && t) return { source: s, target: t, type: e.type } as SimLink;
+        return null;
+      })
+      .filter((l): l is SimLink => l !== null);
 
     /* ── force sim ───────────────────────────────────────────── */
     const sim = d3.forceSimulation<SimNode>(simNodes)
-      .force('link', d3.forceLink<SimNode, SimLink>(simLinks).id((d) => d.id).distance(220).strength(0.5))
-      .force('charge', d3.forceManyBody().strength(viewLayer === 'topics' ? -2000 : -800))
+      .force('link', d3.forceLink<SimNode, SimLink>(simLinks).id((d) => d.id).distance(280).strength(viewLayer === 'topics' ? 0.3 : 0.5))
+      .force('charge', d3.forceManyBody().strength(viewLayer === 'topics' ? -3500 : -1200))
       .force('center', d3.forceCenter(W / 2, H / 2))
-      .force('collision', d3.forceCollide<SimNode>().radius((d) => getR(d.activity) + 40));
+      .force('x', d3.forceX(W / 2).strength(0.08))
+      .force('y', d3.forceY(H / 2).strength(0.08))
+      .force('collision', d3.forceCollide<SimNode>().radius((d) => getR(d.activity) + 50));
 
-    /* ── edges (only for questions) ──────────────────────────── */
+    /* ── edges ───────────────────────────────────────────────── */
     const link = g.append('g').selectAll('line').data(simLinks).enter().append('line')
-      .attr('stroke', '#BCC9E2')
-      .attr('stroke-width', 1.5)
+      .attr('stroke', (d) => viewLayer === 'topics' ? '#D1D5DB' : '#BCC9E2')
+      .attr('stroke-width', (d) => viewLayer === 'topics' ? 1 : 1.5)
       .attr('stroke-dasharray', (d) => d.type === 'concept' ? '5,4' : 'none')
-      .attr('opacity', 0.7);
+      .attr('opacity', (d) => viewLayer === 'topics' ? 0.4 : 0.7);
 
     /* ── nodes ───────────────────────────────────────────────── */
     const nodeG = g.append('g').selectAll('g').data(simNodes).enter().append('g')
@@ -127,6 +146,39 @@ export default function Graph({
         .on('start', (e, d) => { if (!e.active) sim.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
         .on('drag',  (e, d) => { d.fx = e.x; d.fy = e.y; })
         .on('end',   (e, d) => { if (!e.active) sim.alphaTarget(0); d.fx = null; d.fy = null; }) as any);
+
+    /* ── ZOOM TO FIT ────────────────────────────────────────── */
+    function fitView() {
+      if (simNodes.length === 0) return;
+      const nodesX = simNodes.map(d => d.x!);
+      const nodesY = simNodes.map(d => d.y!);
+      const minX = Math.min(...nodesX) - 150;
+      const maxX = Math.max(...nodesX) + 150;
+      const minY = Math.min(...nodesY) - 150;
+      const maxY = Math.max(...nodesY) + 150;
+
+      const gW = maxX - minX;
+      const gH = maxY - minY;
+      const midX = (minX + maxX) / 2;
+      const midY = (minY + maxY) / 2;
+
+      const scale = Math.min(2, 0.85 / Math.max(gW / W, gH / H));
+      const transform = d3.zoomIdentity
+        .translate(W / 2, H / 2)
+        .scale(scale)
+        .translate(-midX, -midY);
+
+      svg.transition().duration(1000).ease(d3.easeCubicOut)
+        .call(zoom.transform, transform);
+    }
+
+    // Fit view after simulation settles slightly
+    sim.on('end', () => {
+      fitView();
+    });
+
+    // Also fit view shortly after start for quick feedback
+    setTimeout(fitView, 500);
 
     /* helper: wrap text inside SVG */
     function wrapText(el: SVGTextElement, text: string, maxWidth: number, lineHeight: number) {
@@ -213,7 +265,7 @@ export default function Graph({
         return d.subject ? SUBJECT_COLORS[d.subject as keyof typeof SUBJECT_COLORS] : '#7C6EE6';
       })
       .attr('stroke-width', (d) => (d.id === selectedNodeId ? 3 : 2))
-      .attr('filter', 'url(#node-shadow)')
+      .attr('filter', (d) => viewLayer === 'topics' ? 'url(#hub-glow)' : 'url(#node-shadow)')
       .attr('opacity', (d) => {
         if (viewLayer !== 'questions' || activeFilters.length === 0) return 1;
         return d.subject && activeFilters.includes(d.subject as Subject) ? 1 : 0.35;
@@ -223,7 +275,7 @@ export default function Graph({
     nodeG.filter((d) => !!d.isNew).append('circle')
       .attr('r', (d) => getR(d.activity))
       .attr('fill', 'none')
-      .attr('stroke', (d) => SUBJECT_COLORS[d.subject])
+      .attr('stroke', (d) => d.subject ? SUBJECT_COLORS[d.subject as Subject] : '#7C6EE6')
       .attr('stroke-width', 2)
       .attr('opacity', 1)
       .each(function (d) {
@@ -242,10 +294,10 @@ export default function Graph({
     nodeG.filter(d => viewLayer === 'questions' || viewLayer === 'topics')
       .append('text')
       .attr('text-anchor', 'middle')
-      .attr('dy', (d) => -getR(d.activity) * (viewLayer === 'topics' ? 0.05 : 0.28))
+      .attr('dy', (d) => -getR(d.activity) * (viewLayer === 'topics' ? 0.18 : 0.28))
       .attr('font-family', 'Syne, sans-serif')
       .attr('font-weight', '800')
-      .attr('font-size', (d) => viewLayer === 'topics' ? 44 : Math.min(getR(d.activity!) * 0.48, 24))
+      .attr('font-size', (d) => viewLayer === 'topics' ? 52 : Math.min(getR(d.activity!) * 0.48, 24))
       .attr('fill', (d) => {
         if (viewLayer === 'topics') return d.color || '#000';
         return d.subject ? SUBJECT_COLORS[d.subject as keyof typeof SUBJECT_COLORS] : '#000';
@@ -254,12 +306,16 @@ export default function Graph({
         if (viewLayer !== 'questions' || activeFilters.length === 0) return 1;
         return d.subject && activeFilters.includes(d.subject as Subject) ? 1 : 0.12;
       })
-      .text((d) => viewLayer === 'topics' ? (d.icon || '?') : (d.subject ? SUBJECT_ICONS[d.subject] : '?'));
+      .text((d) => viewLayer === 'topics' ? (d.icon || '?') : (d.subject ? SUBJECT_ICONS[d.subject] || '?' : '?'));
 
     /* ── LAYER LABEL (e.g., "QUANTUM PHYSICS") ─────────────── */
     nodeG.append('text')
       .attr('text-anchor', 'middle')
-      .attr('dy', (d) => viewLayer === 'questions' ? getR(d.activity!) * 0.1 : 5)
+      .attr('dy', (d) => {
+        if (viewLayer === 'questions') return getR(d.activity!) * 0.1;
+        if (viewLayer === 'topics') return getR(d.activity!) * 0.55;
+        return getR(d.activity!) * 0.42;
+      })
       .attr('font-family', viewLayer === 'questions' ? 'DM Mono, monospace' : 'Outfit, sans-serif')
       .attr('font-size', (d) => {
         if (viewLayer === 'topics') return 16;
@@ -275,7 +331,7 @@ export default function Graph({
       })
       .text((d) => {
         if (viewLayer !== 'questions') return d.label || '';
-        return d.subject ? SUBJECT_LABELS[d.subject].toUpperCase() : '';
+        return d.subject ? SUBJECT_LABELS[d.subject as Subject].toUpperCase() : '';
       });
 
     /* ── TITLE TEXT (2 lines) below subject label ─────────────── */
@@ -369,7 +425,7 @@ export default function Graph({
     });
 
     return () => sim.stop();
-  }, [nodes, edges, selectedNodeId, activeFilters, onNodeClick]);
+  }, [nodes, edges, selectedNodeId, activeFilters, viewLayer, onNodeClick, onDrillDown, bounties]);
 
   useEffect(() => { 
     const cleanup = draw(); 
@@ -440,7 +496,7 @@ export default function Graph({
         {Object.entries(SUBJECT_COLORS).map(([key, color]) => (
           <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: color }} />
-            <span className="section-label" style={{ fontSize: 9, color }}>{SUBJECT_LABELS[key]}</span>
+            <span className="section-label" style={{ fontSize: 9, color }}>{SUBJECT_LABELS[key as Subject]}</span>
           </div>
         ))}
       </div>

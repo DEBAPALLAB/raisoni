@@ -1,4 +1,4 @@
-export type Subject = 'quantum' | 'math' | 'bio' | 'cs';
+export type Subject = 'quantum' | 'math' | 'bio' | 'cs' | 'chem' | 'eng' | 'phil' | 'med';
 export type NodeStatus = 'solved' | 'active' | 'pending';
 export type EdgeType = 'similarity' | 'concept';
 
@@ -14,6 +14,28 @@ export interface SubTopic {
   topicId: Subject;
   label: string;
 }
+
+export const SUBJECT_COLORS: Record<Subject, string> = {
+  quantum: '#7C6EE6',
+  math: '#EC4899',
+  bio: '#10B981',
+  cs: '#3B82F6',
+  chem: '#F59E0B',
+  eng: '#6366F1',
+  phil: '#A855F7',
+  med: '#EF4444',
+};
+
+export const SUBJECT_LABELS: Record<Subject, string> = {
+  quantum: 'Quantum Physics',
+  math: 'Mathematics',
+  bio: 'Biotechnology',
+  cs: 'Computer Science',
+  chem: 'Chemistry',
+  eng: 'Engineering',
+  phil: 'Philosophy',
+  med: 'Medicine',
+};
 
 export const TOPICS: Topic[] = [
   { id: 'quantum', label: 'Quantum Physics', color: '#7C6EE6', icon: 'Ψ' },
@@ -97,126 +119,59 @@ export interface Answer {
 }
 
 export const NODES: Node[] = [
-  {
-    id: 'n1',
-    subject: 'quantum',
-    subTopicId: 'sq1',
-    title: 'How does wave-particle duality affect signal transmission in silicon nanostructures?',
-    status: 'solved',
-    activity: 24,
-    asker: 'Alex Rivera',
-    time: '2h ago',
-  },
-  {
-    id: 'n2',
-    subject: 'math',
-    subTopicId: 'sm1',
-    title: "Schrödinger's Equation Basis — deriving the time-independent form",
-    status: 'active',
-    activity: 12,
-    asker: 'Julian V.',
-    time: '5h ago',
-  },
-  {
-    id: 'n3',
-    subject: 'bio',
-    subTopicId: 'sb1',
-    title: 'Enzymatic Quantum Tunneling in ATP synthesis pathways',
-    status: 'active',
-    activity: 48,
-    asker: 'Priya S.',
-    time: '12m ago',
-    isNew: true,
-  },
-  {
-    id: 'n4',
-    subject: 'quantum',
-    subTopicId: 'sq1',
-    title: "Can Schrödinger's Cat exist in macro-scale biological systems?",
-    status: 'pending',
-    activity: 3,
-    asker: 'Julian V.',
-    time: '2h ago',
-  },
-  {
-    id: 'n5',
-    subject: 'math',
-    subTopicId: 'sm1',
-    title: 'Lattice Theory and crystal symmetry groups — intro resources?',
-    status: 'solved',
-    activity: 6,
-    asker: 'Elena R.',
-    time: '3d ago',
-  },
-  {
-    id: 'n6',
-    subject: 'quantum',
-    subTopicId: 'sq2',
-    title: 'How does the observer effect impact wave function collapse in larger molecular structures?',
-    status: 'solved',
-    activity: 47,
-    asker: 'Dr. Aris V.',
-    time: '40m ago',
-  },
-  {
-    id: 'n7',
-    subject: 'cs',
-    subTopicId: 'sc1',
-    title: 'Quantum computing gate operations — superposition vs classical bit states',
-    status: 'active',
-    activity: 19,
-    asker: 'Leo T.',
-    time: '6h ago',
-  },
-  {
-    id: 'n8',
-    subject: 'quantum',
-    subTopicId: 'sq3',
-    title: 'Probability density functions in logic gate states at quantum scale',
-    status: 'pending',
-    activity: 82,
-    asker: 'Sarah K.',
-    time: '2m ago',
-    isNew: true,
-  },
-  {
-    id: 'n9',
-    subject: 'cs',
-    subTopicId: 'sc1',
-    title: 'Implementing Shor\'s algorithm on NISQ-era hardware — complexity bounds?',
-    status: 'pending',
-    activity: 15,
-    asker: 'Alex Rivera',
-    time: '15m ago',
-    isNew: true,
-  },
-  {
-    id: 'n10',
-    subject: 'bio',
-    subTopicId: 'sb2',
-    title: 'CRISPR-Cas9 target specificity in extreme thermophiles',
-    status: 'active',
-    activity: 31,
-    asker: 'Elena R.',
-    time: '1h ago',
-  },
+  // QUANTUM (sq1, sq2, sq3)
+  { id: 'n1', subject: 'quantum', subTopicId: 'sq1', title: 'Wave-particle duality in silicon nanostructures?', status: 'solved', activity: 44, asker: 'Alex Rivera', time: '2h ago' },
+  { id: 'n4', subject: 'quantum', subTopicId: 'sq1', title: 'Schrödinger\'s Cat in macroscopic bio-systems?', status: 'pending', activity: 12, asker: 'Julian V.', time: '5h ago' },
+  { id: 'n6', subject: 'quantum', subTopicId: 'sq2', title: 'Observer effect on wave function collapse?', status: 'solved', activity: 67, asker: 'Dr. Aris V.', time: '40m ago' },
+  { id: 'n8', subject: 'quantum', subTopicId: 'sq3', title: 'Probability density in NISQ gate operations?', status: 'pending', activity: 82, asker: 'Sarah K.', time: '2m ago', isNew: true },
+  { id: 'nq1', subject: 'quantum', subTopicId: 'sq2', title: 'Decoherence rates in superconducting qubits', status: 'active', activity: 38, asker: 'Leo T.', time: '1h ago' },
+  { id: 'nq2', subject: 'quantum', subTopicId: 'sq3', title: 'Error correction codes for surface code architectures', status: 'active', activity: 55, asker: 'Alex Rivera', time: '12m ago', isNew: true },
+
+  // MATH (sm1, sm2)
+  { id: 'n2', subject: 'math', subTopicId: 'sm1', title: 'Deriving time-independent Schrödinger form', status: 'active', activity: 22, asker: 'Julian V.', time: '5h ago' },
+  { id: 'n5', subject: 'math', subTopicId: 'sm1', title: 'Lattice Theory and crystal symmetry groups', status: 'solved', activity: 18, asker: 'Elena R.', time: '3d ago' },
+  { id: 'nm1', subject: 'math', subTopicId: 'sm2', title: 'Galois Theory applications in cryptography', status: 'active', activity: 41, asker: 'Sarah Jenkins', time: 'Online Now', isNew: true },
+  { id: 'nm2', subject: 'math', subTopicId: 'sm2', title: 'Homological Algebra and TDA in genomics', status: 'pending', activity: 15, asker: 'Dr. Aris V.', time: '6h ago' },
+
+  // CS (sc1, sc2)
+  { id: 'n7', subject: 'cs', subTopicId: 'sc1', title: 'Quantum computing gate operations vs classical', status: 'active', activity: 29, asker: 'Leo T.', time: '6h ago' },
+  { id: 'n9', subject: 'cs', subTopicId: 'sc1', title: 'Shor\'s algorithm complexity on NISQ era HW', status: 'pending', activity: 21, asker: 'Alex Rivera', time: '15m ago', isNew: true },
+  { id: 'nc1', subject: 'cs', subTopicId: 'sc2', title: 'Distributed consensus in high-latency layers', status: 'solved', activity: 50, asker: 'Leo T.', time: '1d ago' },
+  { id: 'nc2', subject: 'cs', subTopicId: 'sc2', title: 'Micro-kernel design for real-time telemetry', status: 'active', activity: 33, asker: 'Elena R.', time: '3h ago' },
+
+  // BIO (sb1, sb2)
+  { id: 'n3', subject: 'bio', subTopicId: 'sb1', title: 'Enzymatic Quantum Tunneling in ATP synthesis', status: 'active', activity: 58, asker: 'Priya S.', time: '12m ago', isNew: true },
+  { id: 'n10', subject: 'bio', subTopicId: 'sb2', title: 'CRISPR-Cas9 target specificity in thermophiles', status: 'active', activity: 41, asker: 'Elena R.', time: '1h ago' },
+  { id: 'nb1', subject: 'bio', subTopicId: 'sb1', title: 'Magnetic sensing in birds — radical pair mechanism', status: 'pending', activity: 12, asker: 'Priya S.', time: '3h ago' },
+  { id: 'nb2', subject: 'bio', subTopicId: 'sb2', title: 'Single-cell ATAC-seq noise modeling', status: 'solved', activity: 90, asker: 'Dr. Aris V.', time: '12h ago' },
+
+  // CHEM (sch1, sch2)
+  { id: 'nch1', subject: 'chem', subTopicId: 'sch1', title: 'Chiral catalysts for asymmetrical synthesis', status: 'active', activity: 25, asker: 'Sarah Jenkins', time: '2h ago' },
+  { id: 'nch2', subject: 'chem', subTopicId: 'sch2', title: 'QM/MM simulations of retinal isomerisation', status: 'pending', activity: 70, asker: 'Priya S.', time: '40m ago', isNew: true },
+
+  // PHIL (sph1, sph2)
+  { id: 'nph1', subject: 'phil', subTopicId: 'sph1', title: 'Bayesian epistemology vs Frequentist intuition', status: 'solved', activity: 48, asker: 'Alex Rivera', time: '2d ago' },
+  { id: 'nph2', subject: 'phil', subTopicId: 'sph2', title: 'Ethical alignment of multi-agent LLM systems', status: 'active', activity: 65, asker: 'Dr. Aris V.', time: '10m ago', isNew: true },
+
+  // ENG (sen1)
+  { id: 'ne1', subject: 'eng', subTopicId: 'sen1', title: 'PID control stability in soft robotic actuators', status: 'active', activity: 42, asker: 'Leo T.', time: '5h ago' },
+
+  // MED (smd1)
+  { id: 'nm3', subject: 'med', subTopicId: 'smd1', title: 'Synaptic plasticity in Hippocampal CA1 nodes', status: 'active', activity: 88, asker: 'Elena R.', time: 'Online Now', isNew: true },
 ];
 
 export const EDGES: Edge[] = [
+  // Inter-topic connections
   { source: 'n1', target: 'n2', type: 'similarity' },
-  { source: 'n1', target: 'n3', type: 'concept' },
-  { source: 'n1', target: 'n5', type: 'concept' },
-  { source: 'n2', target: 'n4', type: 'similarity' },
-  { source: 'n4', target: 'n6', type: 'similarity' },
-  { source: 'n6', target: 'n7', type: 'concept' },
-  { source: 'n6', target: 'n2', type: 'similarity' },
+  { source: 'n1', target: 'n7', type: 'concept' },
   { source: 'n3', target: 'n4', type: 'concept' },
-  { source: 'n7', target: 'n1', type: 'similarity' },
-  { source: 'n5', target: 'n2', type: 'concept' },
-  { source: 'n8', target: 'n1', type: 'concept' },
-  { source: 'n8', target: 'n4', type: 'similarity' },
-  { source: 'n9', target: 'n7', type: 'similarity' },
-  { source: 'n10', target: 'n3', type: 'concept' },
+  { source: 'n6', target: 'n8', type: 'similarity' },
+  { source: 'nq1', target: 'nq2', type: 'concept' },
+  { source: 'nm1', target: 'nc1', type: 'concept' },
+  { source: 'nph2', target: 'nc2', type: 'concept' },
+  { source: 'nch2', target: 'n3', type: 'similarity' },
+  { source: 'nm3', target: 'nb2', type: 'concept' },
+  { source: 'ne1', target: 'nc1', type: 'similarity' },
 ];
 
 export const USERS: User[] = [
@@ -231,114 +186,38 @@ export const USERS: User[] = [
 ];
 
 export const ANSWERS: Answer[] = [
-  {
-    id: 'a1',
-    nodeId: 'n6',
-    authorId: 'u8',
-    body: "The transition from quantum to classical behavior in larger molecular structures, like C60 fullerenes, is primarily governed by environmental decoherence. The 'observer' doesn't necessarily need to be human; any interaction that carries away information about the molecule's path acts as a measurement. At room temperature, molecular collisions with air molecules happen on timescales of femtoseconds — far faster than any quantum coherence can be maintained.",
-    upvotes: 124,
-    isTopInsight: true,
-    isExpert: true,
-    time: '35m ago',
-  },
-  {
-    id: 'a2',
-    nodeId: 'n6',
-    authorId: 'u6',
-    body: "I read a paper recently about phonon interactions in crystals acting as continuous observers. It seems the scale of the structure directly correlates to the rate of decoherence. Larger structures simply have more degrees of freedom available for thermalization.",
-    upvotes: 42,
-    isTopInsight: false,
-    isExpert: false,
-    time: '28m ago',
-  },
-  {
-    id: 'a3',
-    nodeId: 'n6',
-    authorId: 'u4',
-    body: "This is related to the Quantum Darwinism framework proposed by Zurek. The environment doesn't just cause decoherence — it broadcasts information about the system's state, making certain classical outcomes robust and redundantly encoded. That redundancy is why macroscopic objects appear classical.",
-    upvotes: 38,
-    isTopInsight: false,
-    isExpert: true,
-    time: '15m ago',
-  },
-  {
-    id: 'a4',
-    nodeId: 'n6',
-    authorId: 'u2',
-    body: "Great question. Have you looked into the Penrose–Hameroff orchestrated objective reduction theory? They argue that quantum effects in microtubules might persist longer than the standard decoherence model predicts, due to ordered water molecules creating a protected quantum environment.",
-    upvotes: 19,
-    isTopInsight: false,
-    isExpert: false,
-    time: '10m ago',
-  },
-  {
-    id: 'a5',
-    nodeId: 'n1',
-    authorId: 'u8',
-    body: "The phenomenon introduces quantum noise floor limits. In silicon nanostructures below 7nm, electron wave-packets exhibit interference patterns that can lead to unintentional tunneling between adjacent logic gates. This fundamentally limits transistor density and introduces stochastic switching behavior not present in classical devices.",
-    upvotes: 88,
-    isTopInsight: true,
-    isExpert: true,
-    time: '1h ago',
-  },
+  { id: 'a1', nodeId: 'n6', authorId: 'u8', body: "Environmental decoherence is the primary mechanism. Interaction with air molecules or even blackbody radiation carries away path information, effectively performing a 'measurement' that collapses the wavefunction on timescales much faster than macroscopic perception.", upvotes: 124, isTopInsight: true, isExpert: true, time: '35m ago' },
+  { id: 'a2', nodeId: 'nq1', authorId: 'u7', body: "Flux noise from surface defects is often the bottleneck. We're seeing T1 times improve significantly with specialized niobium-nitride resonators.", upvotes: 56, isTopInsight: true, isExpert: true, time: '1h ago' },
+  { id: 'a3', nodeId: 'nc1', authorId: 'u6', body: "Paxos is overkill here. For high-latency layers, we found a variant of HotStuff with optimistic response phases performs 3x better in throughput tests.", upvotes: 92, isTopInsight: true, isExpert: false, time: '5h ago' },
+  { id: 'a4', nodeId: 'nph2', authorId: 'u5', body: "Constitutional AI frameworks like RLAIF provide a scalable way to enforce moral constraints without manual labeling, but the 'constitution' itself remains a philosophical single point of failure.", upvotes: 110, isTopInsight: true, isExpert: true, time: '10m ago' },
+  { id: 'a5', nodeId: 'nm3', authorId: 'u4', body: "LTP at the CA1 synapse is mediated by NMDA receptor activation leading to AMPA receptor insertion. The calcium influx is the critical trigger for the signaling cascade.", upvotes: 75, isTopInsight: true, isExpert: true, time: 'Online Now' },
+  { id: 'a6', nodeId: 'n3', authorId: 'u3', body: "Hydrogen tunneling in enzymes allows reaction rates way beyond classical Arrhenius predictions. It's essentially the wave-nature of the proton finding a path through the barrier.", upvotes: 48, isTopInsight: false, isExpert: false, time: '12m ago' },
+  { id: 'a7', nodeId: 'ne1', authorId: 'u1', body: "Hysteresis in soft actuators makes standard PID loop design difficult. You usually need an inverse model or a machine learning based compensator for high-precision tasks.", upvotes: 22, isTopInsight: false, isExpert: false, time: '3h ago' },
+  // More brief answers to pad the UI
+  { id: 'a8', nodeId: 'nph1', authorId: 'u1', body: "Bayesianism is fundamentally about updating priors based on evidence, whereas Frequentism focuses on long-run frequencies in repeatable experiments.", upvotes: 34, isTopInsight: false, isExpert: false, time: '1d ago' },
+  { id: 'a9', nodeId: 'n1', authorId: 'u5', body: "Silicon nanostructures at these scales are essentially quantum wires. Signal loss happens due to quantum interference patterns forming back-scatter nodes.", upvotes: 68, isTopInsight: true, isExpert: true, time: '2h ago' },
 ];
 
 export const CONNECTED_NODES_MAP: Record<string, Array<{ nodeId: string; match: number; description: string }>> = {
   n1: [
-    { nodeId: 'n7', match: 85, description: 'Quantum gate operations share interference principles with nanostructure signal paths' },
-    { nodeId: 'n8', match: 72, description: 'Probability density functions in logic gate states at quantum scale' },
-    { nodeId: 'n2', match: 68, description: "Schrödinger's equation basis underlies all wave-particle phenomena" },
+    { nodeId: 'n7', match: 85, description: 'Gate logic scaling and quantum noise floor' },
+    { nodeId: 'nq2', match: 72, description: 'Error correction in nano-architectures' },
+    { nodeId: 'n6', match: 45, description: 'Decoherence interference in silicon' },
   ],
   n6: [
-    { nodeId: 'n4', match: 85, description: "Macroscopic superposition and its limitations in biological systems" },
-    { nodeId: 'n2', match: 62, description: 'Copenhagen Interpretation — historical context of wave function collapse' },
-    { nodeId: 'n7', match: 48, description: "Quantum computing gate operations relate to superposition and collapse" },
+    { nodeId: 'nq1', match: 91, description: 'Measurement induced decoherence in qubits' },
+    { nodeId: 'nph2', match: 64, description: 'Epistemology of quantum observation' },
   ],
-  n2: [
-    { nodeId: 'n6', match: 90, description: 'Observer effect and wave function collapse — direct application of the equation' },
-    { nodeId: 'n4', match: 75, description: "Schrodinger's Cat connects directly to the time-independent wave equation" },
-    { nodeId: 'n5', match: 60, description: 'Lattice symmetry groups use similar mathematical frameworks' },
+  nm3: [
+    { nodeId: 'nb2', match: 88, description: 'Genomic expression of plasticity markers' },
+    { nodeId: 'nb1', match: 52, description: 'Biological sensing across networks' },
   ],
-  n4: [
-    { nodeId: 'n6', match: 88, description: 'Observer effect in macroscale systems exactly mirrors Cat paradox' },
-    { nodeId: 'n3', match: 71, description: 'Enzymatic quantum tunneling as a biological macroscale quantum system' },
-    { nodeId: 'n8', match: 55, description: 'Probability density relates to superposition state measurements' },
-  ],
-  n3: [
-    { nodeId: 'n4', match: 79, description: 'Biological quantum effects connect to Schrodinger Cat paradox' },
-    { nodeId: 'n1', match: 65, description: 'Silicon nanostructures — quantum effects in engineered systems' },
-    { nodeId: 'n7', match: 52, description: 'Quantum computing biology-inspired algorithms' },
-  ],
-  n5: [
-    { nodeId: 'n2', match: 82, description: "Mathematical basis connects crystal groups to Schrödinger formalism" },
-    { nodeId: 'n1', match: 58, description: 'Silicon crystal lattice structure and quantum effects' },
-    { nodeId: 'n3', match: 44, description: 'Biological crystal structures share lattice theory principles' },
-  ],
-  n7: [
-    { nodeId: 'n1', match: 87, description: 'Signal transmission in silicon nanostructures — direct gate application' },
-    { nodeId: 'n6', match: 73, description: 'Measurement collapse in quantum computing gate operations' },
-    { nodeId: 'n8', match: 66, description: 'Probability density of logic gate quantum states' },
-  ],
-  n8: [
-    { nodeId: 'n1', match: 81, description: 'Wave-particle duality affects probability distributions in transistors' },
-    { nodeId: 'n4', match: 69, description: 'Logic gate probability — quantum superposition states' },
-    { nodeId: 'n7', match: 78, description: 'Quantum gate operations produce specific probability density profiles' },
+  nc1: [
+    { nodeId: 'ne1', match: 77, description: 'Control systems for distributed agents' },
+    { nodeId: 'nc2', match: 85, description: 'Kernel support for high-latency protocols' },
   ],
 };
 
-export const SUBJECT_LABELS: Record<string, string> = {
-  quantum: 'Quantum Physics',
-  math: 'Mathematics',
-  bio: 'Biotechnology',
-  cs: 'Computer Science',
-};
-
-export const SUBJECT_COLORS: Record<string, string> = {
-  quantum: '#7C6EE6',
-  math: '#60A5FA',
-  bio: '#4ADE80',
-  cs: '#F472B6',
-};
 
 export const getUserById = (id: string): User | undefined => USERS.find(u => u.id === id);
 export const getNodeById = (id: string): Node | undefined => NODES.find(n => n.id === id);

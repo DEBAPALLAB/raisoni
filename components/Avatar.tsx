@@ -7,12 +7,13 @@ interface AvatarProps {
 }
 
 export default function Avatar({ name, color = '#7C6EE6', size = 28 }: AvatarProps) {
-  const initials = name
+  const safeName = name || 'Anonymous User';
+  const initials = safeName
     .split(' ')
-    .map((w) => w[0])
+    .map((w) => w[0] || '')
     .slice(0, 2)
     .join('')
-    .toUpperCase();
+    .toUpperCase() || '?';
 
   return (
     <div

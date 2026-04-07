@@ -12,7 +12,6 @@ interface TopbarProps {
 
 export default function Topbar({ onAskDoubt }: TopbarProps) {
   const { balance } = useTokens();
-
   const [showStreak, setShowStreak] = useState(false);
 
   return (
@@ -29,16 +28,22 @@ export default function Topbar({ onAskDoubt }: TopbarProps) {
       position: 'relative',
     }}>
       {/* ── Brand ─────────────────────────────────────────── */}
-      <Link href="/" style={{ textDecoration: 'none' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{
-            width: 32, height: 32, background: 'var(--accent-primary)', borderRadius: 10,
-            display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff',
-            fontFamily: 'Outfit', fontWeight: 800, fontSize: 18,
-          }}>S</div>
-          <div className="font-outfit" style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
-            Solvi
-          </div>
+      <Link
+        href="/"
+        style={{
+          textDecoration: 'none',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+        }}
+      >
+        <div style={{
+          width: 32, height: 32, background: 'var(--accent-primary)', borderRadius: 10,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff',
+          fontFamily: 'Outfit', fontWeight: 800, fontSize: 18,
+        }}>S</div>
+        <div className="font-outfit" style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
+          Solvi
         </div>
       </Link>
 
@@ -51,99 +56,65 @@ export default function Topbar({ onAskDoubt }: TopbarProps) {
             <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
           </svg>
           <input
-            type="text"
-            placeholder="Search the lexicon..."
-            className="input-premium"
+            placeholder="Search keywords, topics, or subtopics..."
             style={{
-              width: '100%', paddingLeft: 44, height: 44, fontSize: 14,
+              width: '100%', height: 44, padding: '0 16px 0 44px',
+              background: '#F1F5F9', border: '1px solid transparent', borderRadius: 12,
+              fontSize: 14, outline: 'none', transition: 'all 0.2s',
             }}
           />
         </div>
       </div>
 
-      {/* ── Actions ───────────────────────────────────────── */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginLeft: 'auto' }}>
-        {/* Streak Button */}
+      {/* ── Right Actions ──────────────────────────────────── */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginLeft: 'auto' }}>
+        {/* Streak Flame */}
         <div style={{ position: 'relative' }}>
-          <button 
+          <button
             onClick={() => setShowStreak(!showStreak)}
-            className="btn-pill btn-pill-ghost"
-            style={{ 
-              height: 44, padding: '0 16px', gap: 6,
-              background: showStreak ? 'var(--bg-accent-soft)' : undefined,
-              color: showStreak ? 'var(--accent-primary)' : undefined,
-            }}
+            className={`pill-btn ${showStreak ? 'active' : ''}`}
+            style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px' }}
           >
-            <span style={{ fontSize: 16 }}>🔥</span>
-            <span style={{ fontWeight: 700 }}>14</span>
+            <span style={{ fontSize: 18 }}>🔥</span>
+            <span style={{ fontWeight: 700 }}>7</span>
           </button>
           
           {showStreak && (
-            <StreakPopover onClose={() => setShowStreak(false)} />
+            <div style={{ position: 'absolute', top: '120%', right: 0, zIndex: 100 }}>
+              <StreakPopover onClose={() => setShowStreak(false)} />
+            </div>
           )}
         </div>
 
-        {/* Token Balance */}
-        <Link href="/rewards" style={{ textDecoration: 'none' }}>
-          <div className="hover-glow" style={{ 
-            display: 'flex', alignItems: 'center', gap: 8, 
-            padding: '8px 16px', background: 'var(--bg-accent-soft)', 
-            border: '1px solid #E0E7FF', borderRadius: 99,
-            cursor: 'pointer', transition: 'all 0.2s',
+        {/* Tokens / Rewards */}
+        <Link 
+          href="/rewards"
+          style={{ textDecoration: 'none' }}
+        >
+          <div style={{ 
+            display: 'flex', alignItems: 'center', gap: 10, padding: '8px 16px',
+            background: 'rgba(79, 70, 229, 0.08)', borderRadius: 12, border: '1px solid rgba(79, 70, 229, 0.15)'
           }}>
-            <span style={{ color: 'var(--accent-warning)', fontSize: 14 }}>✦</span>
-            <span className="font-inter" style={{ fontSize: 14, color: 'var(--accent-primary)', fontWeight: 700 }}>
-              {balance}
-            </span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="8"/><path d="M12 7v10M8 12h8"/>
+            </svg>
+            <span style={{ fontWeight: 800, color: 'var(--accent-primary)', fontSize: 15 }}>{balance}</span>
           </div>
         </Link>
 
-        <button
+        {/* Action Button */}
+        <button 
           onClick={onAskDoubt}
-          className="btn-pill btn-pill-primary"
-          style={{ height: 44, padding: '0 24px' }}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14m-7-7v14"/></svg>
-          Ask Doubt
-        </button>
-
-        <div style={{ width: 1, height: 32, background: 'var(--border-subtle)' }} />
-
-        {/* User Profile */}
-        <Link
-          href="/profile"
-          aria-label="Open profile"
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-            textDecoration: 'none',
+            background: 'var(--text-primary)', color: '#fff', border: 'none',
+            borderRadius: 12, padding: '10px 24px', fontWeight: 700, fontSize: 14,
+            cursor: 'pointer', boxShadow: '0 10px 15px -3px rgba(15, 23, 42, 0.1)',
           }}
         >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 10,
-              padding: '4px 8px 4px 4px',
-              borderRadius: 999,
-              border: '1px solid var(--border-subtle)',
-              background: 'var(--bg-surface)',
-              transition: 'all 0.2s ease',
-            }}
-            className="hover-glow"
-          >
-            <Avatar name="Alex Rivera" color="#7C6EE6" size={40} />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>
-                Alex Rivera
-              </span>
-              <span className="section-label" style={{ fontSize: 9 }}>
-                View profile
-              </span>
-            </div>
-          </div>
-        </Link>
+          Ask Question
+        </button>
+
+        <Avatar name="Julian V." />
       </div>
     </header>
   );
